@@ -1,0 +1,29 @@
+/* ============================================================
+   index.css  — replaces Vite's default index.css entirely
+   ============================================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  background: #f5f2ec;
+  /* NO max-width, NO padding */
+}
+
+/* Vite default sets max-width: 1280px on #root — REMOVE IT */
+#root {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: left !important;
+}

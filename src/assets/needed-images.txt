@@ -1,0 +1,22 @@
+# Add these images to src/assets and update component paths if needed
+
+hero-team.jpg
+service-automation.jpg
+service-ai.jpg
+service-data.jpg
+service-analytics.jpg
+service-strategy.jpg
+case-45-degrees.jpg
+case-clandestine.jpg
+case-globalbank.jpg
+case-railspeed.jpg
+team-mila.jpg
+team-david.jpg
+team-sophia.jpg
+team-tobias.jpg
+testimonial-background.jpg
+news-1.jpg
+news-2.jpg
+news-3.jpg
+faq-jessica.jpg
+faq-dmitri.jpg

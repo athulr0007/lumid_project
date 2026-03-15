@@ -1,0 +1,60 @@
+/* ============================================================
+   GLOBAL RESET — paste this at the TOP of your App.css
+   and REMOVE any max-width, padding, or margin on #root / body
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+/* 1. Hard reset everything */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* 2. Root and body must be FULL WIDTH — no max-width, no padding */
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: #f5f2ec;
+  color: #0d0d0d;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* NO max-width, NO padding, NO margin */
+}
+
+/* 3. Vite/CRA puts a #root div — it MUST be full width */
+#root {
+  width: 100%;
+  min-height: 100vh;
+  /* NO max-width, NO padding, NO margin */
+}
+
+/* 4. CSS variables */
+:root {
+  --bg:     #f5f2ec;
+  --dark:   #0d0d0d;
+  --green:  #00e547;
+  --blue:   #3b5bff;
+  --white:  #ffffff;
+  --gray:   #888888;
+  --border: #ddd9d1;
+}
+
+/* 5. Fade-up utility (used by FadeUp.jsx) */
+.fade-up {
+  opacity: 0;
+  transform: translateY(32px);
+  transition:
+    opacity  0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}

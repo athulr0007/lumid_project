@@ -48,16 +48,27 @@ export default function ContactSection() {
               your permission to process your personal data for the purposes
               specified in our Privacy Policy.
             </label>
-            <button className="ct-submit">
-              Submit
-              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                <path
-                  d="M3.5 14.5L14.5 3.5M14.5 3.5H6M14.5 3.5V12"
-                  stroke="#0d0d0d" strokeWidth="1.6"
-                  strokeLinecap="round" strokeLinejoin="round"
-                />
-              </svg>
-            </button>
+           <button className="ct-submit">
+  <div className="ct-text-wrap">
+    <div className="ct-inner">
+      <span className="ct-text">Submit</span>
+    </div>
+
+    <div className="ct-inner ct-inner--clone">
+      <span className="ct-text">Submit</span>
+    </div>
+  </div>
+
+  <svg className="ct-arrow" width="18" height="18" viewBox="0 0 18 18">
+    <path
+      d="M3.5 14.5L14.5 3.5M14.5 3.5H6M14.5 3.5V12"
+      stroke="#0d0d0d"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+</button>
           </div>
         </div>
       </section>
@@ -86,12 +97,13 @@ const css = `
   }
   .ct-title {
     font-size: clamp(40px, 4.5vw, 64px);
-    font-weight: 900; letter-spacing: -2.5px;
+    font-weight: 600; letter-spacing: -2.5px;
     line-height: 1; margin: 0; color: #0d0d0d;
   }
   .ct-desc {
     font-size: 15px; color: #555; line-height: 1.65;
-    max-width: 380px; margin: 0; padding-top: 4px;
+    max-width: 590px; margin: 0; padding-top: 4px;
+    font-weight: 500;
   }
 
   .ct-form {
@@ -99,7 +111,7 @@ const css = `
     grid-template-columns: 1fr 1fr;
   }
   .ct-field {
-    border: 1px solid #ddd9d1;
+    border: 1px solid #a0a0a0;
     padding: 20px 24px; font-size: 15px;
     background: transparent; color: #0d0d0d;
     font-family: inherit; outline: none;
@@ -107,14 +119,14 @@ const css = `
     transition: border-color 0.2s;
   }
   .ct-field:focus { border-color: #0d0d0d; z-index: 1; position: relative; }
-  .ct-field::placeholder { color: #aaa; }
+  .ct-field::placeholder { color: #707070; }
   .ct-full { grid-column: span 2; }
   .ct-area { min-height: 140px; resize: vertical; }
 
   .ct-footer {
     grid-column: span 2;
     display: flex; align-items: center;
-    border: 1px solid #ddd9d1; margin-top: -1px;
+    border: 1px solid #a0a0a0; margin-top: -1px;
   }
   .ct-agree {
     flex: 1; display: flex; align-items: flex-start; gap: 12px;
@@ -124,26 +136,77 @@ const css = `
   }
   .ct-checkbox {
     width: 16px; height: 16px;
-    border: 1px solid #ddd9d1;
+    border: 1px solid #9c9c9c;
     cursor: pointer; margin-top: 1px; flex-shrink: 0;
     appearance: none; -webkit-appearance: none;
     transition: background 0.18s;
+    position: relative;
   }
   .ct-checkbox:checked { background: #0d0d0d; border-color: #0d0d0d; }
   .ct-agree a { color: #0d0d0d; font-weight: 600; }
+.ct-checkbox::after {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 8px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) scale(0);
+  top: 2px;
+  left: 5px;
+  transition: transform 0.15s ease;
+}
+  .ct-checkbox:checked {
+  background: #0d0d0d;
+  border-color: #0d0d0d;
+}
 
-  .ct-submit {
-    background: #00e547; color: #0d0d0d;
-    padding: 0 44px; height: 64px;
-    font-size: 16px; font-weight: 700;
-    display: flex; align-items: center; gap: 12px;
-    border: none; cursor: pointer; font-family: inherit;
-    white-space: nowrap; flex-shrink: 0;
-    transition: background 0.18s;
-  }
-  .ct-submit:hover { background: #00cf3f; }
-  .ct-submit svg { transition: transform 0.2s cubic-bezier(0.16,1,0.3,1); }
-  .ct-submit:hover svg { transform: translate(3px,-3px); }
+.ct-checkbox:checked::after {
+  transform: rotate(45deg) scale(1);
+}
+.ct-submit {
+  background: #00e547;
+  color: #0d0d0d;
+  height: 64px;
+  width: 33%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  overflow: hidden;
+  font-size: 18px;
+  font-weight: 500;
+}
+  .ct-text-wrap {
+  position: relative;
+  height: 20px;
+  overflow: hidden;
+}
+ .ct-inner {
+  height: 20px;
+  display: flex;
+  align-items: center;
+  transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+  .ct-inner svg {
+  margin-left: auto;
+  transform: none !important; /* pushes arrow to end */
+}
+.ct-inner--clone {
+  position: absolute;
+  top: 100%;
+  left: 0;
+}
+  .ct-submit:hover .ct-inner {
+  transform: translateY(-100%);
+}
+  .ct-submit:hover .ct-inner--clone {
+  transform: translateY(-100%);
+}
+
+
 
   @media (max-width: 1100px) {
     .ct-wrap { padding: 56px 32px; }

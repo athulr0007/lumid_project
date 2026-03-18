@@ -14,10 +14,79 @@ export const caseStudies = [
 ];
 
 export const team = [
-  { name: "Mila Kovalenko", role: "Chief Strategy Officer", dept: "Leadership", location: "London, UK", bars: [1,1,1,1,1,1,0,0,0,0], color: "green", img: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&q=80" },
-  { name: "David Sato", role: "Head of AI Engineering", dept: "Engineering", location: "Tokyo, Japan", bars: [1,1,1,1,1,1,1,0,0,0], color: "blue", img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&q=80" },
-  { name: "Sophia Nguyen", role: "Automation Architect", dept: "Engineering", location: "New York, USA", bars: [1,1,1,1,1,1,0,0,0,0], color: "blue", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&q=80" },
-  { name: "Tobias Keller", role: "Senior Software Engineer", dept: "Engineering", location: "Berlin, Germany", bars: [1,1,1,1,1,1,1,1,0,0], color: "blue", img: "https://images.unsplash.com/photo-1552058544-f2b08422138a?w=400&q=80" },
+  {
+    name: "Mila Kovalenko",
+    role: "Chief Strategy Officer",
+    dept: "Leadership",
+    location: "London, UK",
+    bars: [1,1,1,1,0,0,0,0,0,0],
+    color: "green",
+    img: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&q=80"
+  },
+  {
+    name: "David Sato",
+    role: "Head of AI Engineering",
+    dept: "Engineering",
+    location: "Tokyo, Japan",
+    bars: [1,1,1,1,1,1,1,0,0,0],
+    color: "blue",
+    img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&q=80"
+  },
+  {
+    name: "Sophia Nguyen",
+    role: "Automation Architect",
+    dept: "Engineering",
+    location: "New York, USA",
+    bars: [1,1,1,1,1,1,0,0,0,0],
+    color: "blue",
+    img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&q=80"
+  },
+  {
+    name: "Tobias Keller",
+    role: "Senior Software Engineer",
+    dept: "Engineering",
+    location: "Berlin, Germany",
+    bars: [1,1,1,1,1,1,1,1,0,0],
+    color: "blue",
+    img: "https://images.unsplash.com/photo-1552058544-f2b08422138a?w=400&q=80"
+  },
+
+  {
+    name: "Emma Collins",
+    role: "AI Research Lead",
+    dept: "Leadership",
+    location: "Berlin, Germany",
+    color: "blue",
+    img: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&q=80",
+    bars: [1,1,1,1,1,0,0,0,0,0]
+  },
+  {
+    name: "Liam Chen",
+    role: "ML Engineer",
+    dept: "Engineering",
+    location: "Singapore",
+    color: "green",
+    img: "https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?w=400&q=80",
+    bars: [1,1,1,0,0,0,0,0,0,0]
+  },
+  {
+    name: "Sofia Martinez",
+    role: "Product Strategist",
+    dept: "Leadership",
+    location: "Madrid, Spain",
+    color: "blue",
+    img: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&q=80",
+    bars: [1,1,1,1,0,0,0,0,0,0]
+  },
+  {
+    name: "Noah Kim",
+    role: "AI Architect",
+    dept: "Engineering",
+    location: "Seoul, Korea",
+    color: "green",
+    img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&q=80",
+    bars: [1,1,1,1,1,1,0,0,0,0]
+  }
 ];
 
 export const faqs = [

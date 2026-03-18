@@ -33,51 +33,113 @@ const css = `
     background: #0d0d0d;
     color: #fff;
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: 180px 1fr 900px;
     align-items: center;
-    gap: 40px;
-    padding: 28px 60px;
-    border-top: 1px solid #222;
+    column-gap: 48px;
+    padding: 63px 80px;
+    border-top: 1px solid #1a1a1a;
   }
-  .nl-label {
-    display: flex; align-items: center; gap: 10px;
-    font-size: 16px; font-weight: 700; white-space: nowrap;
-  }
-  .nl-green-sq {
-    width: 10px; height: 10px;
-    background: #00e547; flex-shrink: 0;
-  }
-  .nl-desc {
-    font-size: 14px; color: rgba(255,255,255,0.5);
-    line-height: 1.55; margin: 0;
-  }
-  .nl-form { display: flex; }
-  .nl-input {
-    padding: 14px 18px; min-width: 280px;
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.14);
-    color: #fff; font-size: 14px;
-    font-family: inherit; outline: none;
-    transition: border-color 0.2s;
-  }
-  .nl-input::placeholder { color: rgba(255,255,255,0.35); }
-  .nl-input:focus { border-color: #00e547; }
-  .nl-btn {
-    background: #00e547; color: #0d0d0d;
-    padding: 14px 22px; font-size: 14px; font-weight: 700;
-    border: none; cursor: pointer; font-family: inherit;
-    display: flex; align-items: center; gap: 9px;
-    transition: background 0.18s; white-space: nowrap;
-  }
-  .nl-btn:hover { background: #00cf3f; }
-  .nl-btn svg { transition: transform 0.2s cubic-bezier(0.16,1,0.3,1); }
-  .nl-btn:hover svg { transform: translate(2px,-2px); }
 
-  @media (max-width: 1100px) {
-    .nl-wrap { grid-template-columns: 1fr; gap: 20px; padding: 32px; }
+  .nl-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 25px;
+    font-weight: 600;
+    white-space: nowrap;
   }
+
+  .nl-green-sq {
+    width: 20px;
+    height: 20px;
+    background: #00e547;
+  }
+
+  .nl-desc {
+    font-size: 14px;
+    color: rgb(255, 253, 253);
+    line-height: 1.6;
+    max-width: 420px;
+    margin: 0;
+    justify-self: end;
+    margin-left: 170px;
+  }
+
+  .nl-form {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .nl-input {
+    height: 69px;
+    width: 600px;
+    padding: 0 18px;
+    background: transparent;
+    border: 1px solid rgba(255, 254, 254, 0.79);
+    color: #fff;
+    font-size: 17px;
+    outline: none;
+  }
+
+  .nl-input::placeholder {
+    color: rgba(255, 255, 255, 0.87);
+  }
+
+  .nl-input:focus {
+    border-color: #00e547;
+  }
+
+  .nl-btn {
+    height: 69px;
+    width: 270px;
+    padding: 0 26px;
+    background: #00e547;
+    color: #0d0d0d;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    white-space: nowrap;
+     justify-content: space-between; /* key change */
+  }
+
+  .nl-btn svg {
+    transition: transform 0.2s ease;
+  }
+
+  .nl-btn:hover svg {
+    transform: translate(3px, -3px);
+  }
+
+  /* tablet */
+  @media (max-width: 1100px) {
+    .nl-wrap {
+      grid-template-columns: 1fr;
+      row-gap: 20px;
+      padding: 32px 40px;
+    }
+
+    .nl-form {
+      justify-content: flex-start;
+    }
+  }
+
+  /* mobile */
   @media (max-width: 640px) {
-    .nl-wrap { padding: 28px 24px; }
-    .nl-input { min-width: 0; flex: 1; }
+    .nl-wrap {
+      padding: 24px;
+    }
+
+    .nl-form {
+      width: 100%;
+    }
+
+    .nl-input {
+      width: 100%;
+      flex: 1;
+    }
   }
 `;

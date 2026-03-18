@@ -5,10 +5,17 @@ function useReveal(ref, delay = 0) {
     const el = ref.current;
     if (!el) return;
     el.style.transitionDelay = `${delay}ms`;
+
     const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) { el.classList.add("fq-vis"); obs.disconnect(); } },
+      ([e]) => {
+        if (e.isIntersecting) {
+          el.classList.add("fq-vis");
+          obs.disconnect();
+        }
+      },
       { threshold: 0.07 }
     );
+
     obs.observe(el);
     return () => obs.disconnect();
   }, [delay]);
@@ -56,75 +63,136 @@ const faqFaces = [
   },
 ];
 
+function FAQItem({ f, i, open, setOpen }) {
+  const isOpen = open.includes(i);
+  const ref = useRef(null);
+
+useEffect(() => {
+  const el = ref.current;
+  if (!el) return;
+
+  if (isOpen) {
+    el.style.height = el.scrollHeight + "px";
+  } else {
+    el.style.height = "0px";
+  }
+}, [isOpen]);
+
+  return (
+    <div className="fq-item">
+     <button
+  className="fq-q"
+  onClick={() => {
+    if (isOpen) {
+      setOpen(open.filter((id) => id !== i));
+    } else {
+      setOpen([...open, i]);
+    }
+  }}
+>
+  <span className={`fq-icon ${isOpen ? "fq-icon--open" : ""}`}>
+    +
+  </span>
+
+  <span className="fq-text">{f.q}</span>
+</button>
+
+      <div ref={ref} className="fq-answer">
+        <div className="fq-answer-inner">{f.a}</div>
+      </div>
+    </div>
+  );
+}
+
 export default function FAQSection() {
-  const [open, setOpen] = useState(0);
-  const leftRef  = useRef(null);
+  const [open, setOpen] = useState([]);
+  const leftRef = useRef(null);
   const rightRef = useRef(null);
+
   useReveal(leftRef);
   useReveal(rightRef, 120);
 
   return (
     <>
       <style>{css}</style>
+
       <section className="fq-wrap">
-        {/* ── Left ── */}
+        {/* LEFT */}
         <div className="fq-left fq-fade" ref={leftRef}>
-          <div className="fq-faces">
-            {faqFaces.map((f, i) => (
-              <div key={i} className="fq-face">
-                <img src={f.img} alt={f.name} />
-                <div className="fq-face-tag">
-                  <span className="fq-source-tag">
-                    ⚡ SOURCE<sup>®</sup>
-                  </span>
-                </div>
+        <div className="fq-faces">
+  {faqFaces.map((f, i) => (
+    <div key={i} className="fq-face-wrap">
+
+      <div className="fq-face">
+        <img src={f.img} alt={f.name} />
+      </div>
+
+      <div className="fq-face-tag">
+        <span className="fq-source-tag">
+          ⚡ SOURCE<sup>®</sup>
+        </span>
+      </div>
+
                 <div className="fq-face-info">
-                  <div className="fq-face-dept">
-                    <span className="fq-face-dot" style={{ background: f.color }} />
-                  </div>
-                  <div className="fq-face-name">{f.name}</div>
-                  <div className="fq-face-role">{f.role}</div>
-                </div>
+  <div className="fq-face-name">
+    <span
+      className="fq-face-dot"
+      style={{ background: f.color }}
+    />
+    {f.name}
+  </div>
+  <div className="fq-face-role">{f.role}</div>
+</div>
               </div>
             ))}
           </div>
 
           <p className="fq-note">
-            Don't see the answer you're looking for?{" "}
-            Reach out to our <a href="#">experts.</a>
+            Don't see the answer you're looking for?<br /> Reach out to our experts{" "}
+            
           </p>
 
-          <a className="fq-contact-btn" href="#">
-            Get in touch
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path
-                d="M3 13L13 3M13 3H5M13 3v8"
-                stroke="white" strokeWidth="1.5"
-                strokeLinecap="round" strokeLinejoin="round"
-              />
-            </svg>
-          </a>
+         <a className="fq-contact-btn" href="#">
+  <div className="fq-btn-inner">
+    <span>Get in touch</span>
+    <svg width="16" height="16" viewBox="0 0 16 16">
+      <path
+        d="M3 13L13 3M13 3H5M13 3v8"
+        stroke="white"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  </div>
+
+  <div className="fq-btn-inner fq-btn-inner--clone">
+    <span>Get in touch</span>
+    <svg width="16" height="16" viewBox="0 0 16 16">
+      <path
+        d="M3 13L13 3M13 3H5M13 3v8"
+        stroke="white"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  </div>
+</a>
         </div>
 
-        {/* ── Right ── */}
+        {/* RIGHT */}
         <div className="fq-right fq-fade" ref={rightRef}>
           <h2 className="fq-title">Frequently asked questions</h2>
 
           {faqs.map((f, i) => (
-            <div key={i} className="fq-item">
-              <button
-                className="fq-q"
-                onClick={() => setOpen(open === i ? -1 : i)}
-              >
-                <span>{f.q}</span>
-                <span className={`fq-icon ${open === i ? "fq-icon--open" : ""}`}>
-                  +
-                </span>
-              </button>
-              <div className={`fq-answer ${open === i ? "fq-answer--open" : ""}`}>
-                {f.a}
-              </div>
-            </div>
+            <FAQItem
+              key={i}
+              f={f}
+              i={i}
+              open={open}
+              setOpen={setOpen}
+            />
           ))}
         </div>
       </section>
@@ -133,107 +201,214 @@ export default function FAQSection() {
 }
 
 const css = `
-  .fq-fade {
-    opacity: 0; transform: translateY(30px);
-    transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1),
-                transform 0.7s cubic-bezier(0.16,1,0.3,1);
-  }
-  .fq-vis { opacity: 1; transform: none; }
+.fq-fade {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.7s cubic-bezier(0.16,1,0.3,1);
+}
+.fq-vis {
+  opacity: 1;
+  transform: none;
+}
 
+.fq-wrap {
+  padding: 80px 60px;
+  background: #f5f2ec;
+  display: grid;
+  grid-template-columns: 670px 1fr;
+  gap: 80px;
+}
+
+/* LEFT */
+.fq-faces {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.fq-face {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  clip-path: polygon(
+     0% 22%,   /* vertical down */
+     22% 22%,  /* corner */
+     32% 0%,
+    100% 0%,
+    100% 78%,   /* bottom-right cut */
+    78% 100%,
+    0% 100%
+  );
+}
+  .fq-face-wrap {
+  position: relative;
+}
+
+.fq-face img {
+  width: 100%;
+  height: 360px;
+  object-fit: cover;
+}
+
+.fq-face-tag {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+}
+
+.fq-source-tag {
+  color: #000000;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 3px 6px;
+}
+
+.fq-face-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fq-face-dot {
+  width: 14px;
+  height: 14px;
+  display: inline-block;
+}
+
+.fq-face-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 17px;
+  font-weight: 400;
+  margin-top: 17px;
+
+}
+.fq-face-role {
+  font-size: 14px;
+  color: #666;
+  margin-left: 2px;
+  font-weight: 450;
+}
+
+.fq-note {
+  font-size: 17px;
+  color: #555;
+  margin-bottom: 16px;
+  font-weight: 560;
+  line-height: 1.5;
+  margin-top: auto;
+}
+
+.fq-note a {
+  color: #000;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.fq-contact-btn {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #0d0d0d;
+  color: #fff;
+  padding: 16px 20px;
+  text-decoration: none;
+  height: 59px;
+}
+.fq-btn-inner {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+.fq-left {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.fq-btn-inner--clone {
+  transform: translateY(100%);
+}
+
+.fq-contact-btn:hover .fq-btn-inner {
+  transform: translateY(-100%);
+}
+
+.fq-contact-btn:hover .fq-btn-inner--clone {
+  transform: translateY(0%);
+}
+/* RIGHT */
+.fq-title {
+  font-size: 66px;
+  font-weight: 500;
+  margin-bottom: 50px;
+}
+
+.fq-item {
+  border-top: px solid #ddd;
+  background: #e5e5e5;
+  padding: 0 32px;
+  margin-bottom: 3px;
+}
+
+.fq-q {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  font-size: 19px;
+  font-weight: 300;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+  .fq-text {
+  flex: 1;
+  margin-left: 25px;
+}
+
+.fq-icon {
+  font-size: 26px;
+  transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
+  font-weight: 100;
+  
+}
+
+.fq-icon--open {
+  transform: rotate(45deg);
+}
+
+.fq-answer {
+  height: 0;
+  overflow: hidden;
+  transition: height 0.45s cubic-bezier(0.16,1,0.3,1);
+  margin-left: 41px;
+}
+
+.fq-answer-inner {
+  padding-bottom: 20px;
+  font-size: 15px;
+  color: #555;
+  line-height: 1.5;
+  font-weight: 410;
+}
+
+@media (max-width: 1100px) {
   .fq-wrap {
-    padding: 80px 60px;
-    border-top: 1px solid #ddd9d1;
-    background: #f5f2ec;
-    display: grid;
-    grid-template-columns: 300px 1fr;
-    gap: 80px;
+    grid-template-columns: 1fr;
+    gap: 40px;
   }
-
-  /* ── Left ── */
-  .fq-faces {
-    display: grid; grid-template-columns: 1fr 1fr;
-    gap: 16px; margin-bottom: 24px;
-  }
-  .fq-face { position: relative; overflow: hidden; }
-  .fq-face img { width: 100%; height: 200px; object-fit: cover; display: block; }
-
-  .fq-face-tag { position: absolute; top: 8px; left: 8px; }
-  .fq-source-tag {
-    background: rgba(0,0,0,0.65); color: #fff;
-    padding: 3px 7px; font-size: 9px; font-weight: 800;
-    display: flex; align-items: center; gap: 3px;
-  }
-  .fq-source-tag sup { font-size: 6px; vertical-align: super; }
-
-  .fq-face-info {
-    position: absolute; bottom: 0; left: 0; right: 0;
-    background: linear-gradient(transparent, rgba(0,0,0,0.72));
-    padding: 24px 10px 8px; color: #fff;
-  }
-  .fq-face-dept { margin-bottom: 2px; }
-  .fq-face-dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    display: inline-block;
-  }
-  .fq-face-name { font-size: 11.5px; font-weight: 700; }
-  .fq-face-role { font-size: 10px; opacity: 0.75; }
-
-  .fq-note {
-    font-size: 14px; color: #555; line-height: 1.65;
-    margin-bottom: 16px;
-  }
-  .fq-note a {
-    color: #0d0d0d; font-weight: 700;
-    text-decoration: underline; text-underline-offset: 2px;
-  }
-
-  .fq-contact-btn {
-    display: flex; align-items: center; justify-content: space-between;
-    background: #0d0d0d; color: #fff;
-    padding: 16px 20px; font-size: 14px; font-weight: 600;
-    text-decoration: none; transition: background 0.18s;
-  }
-  .fq-contact-btn:hover { background: #1a1a1a; }
-  .fq-contact-btn svg { transition: transform 0.2s cubic-bezier(0.16,1,0.3,1); }
-  .fq-contact-btn:hover svg { transform: translate(3px,-3px); }
-
-  /* ── Right ── */
-  .fq-title {
-    font-size: clamp(26px, 2.8vw, 40px);
-    font-weight: 900; letter-spacing: -1px;
-    margin: 0 0 32px; color: #0d0d0d;
-  }
-  .fq-item { border-top: 1px solid #ddd9d1; }
-  .fq-item:last-child { border-bottom: 1px solid #ddd9d1; }
-
-  .fq-q {
-    display: flex; align-items: center; justify-content: space-between;
-    width: 100%; padding: 20px 0;
-    font-size: 15px; font-weight: 600; color: #0d0d0d;
-    background: none; border: none; cursor: pointer;
-    font-family: inherit; text-align: left; gap: 20px;
-    transition: color 0.18s;
-  }
-  .fq-q:hover { color: #555; }
-
-  .fq-icon {
-    font-size: 22px; font-weight: 300; line-height: 1;
-    flex-shrink: 0;
-    transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
-  }
-  .fq-icon--open { transform: rotate(45deg); }
-
-  .fq-answer {
-    overflow: hidden; max-height: 0;
-    font-size: 14px; color: #555; line-height: 1.72;
-    transition: max-height 0.35s cubic-bezier(0.16,1,0.3,1), padding 0.3s;
-  }
-  .fq-answer--open { max-height: 280px; padding-bottom: 22px; }
-
-  @media (max-width: 1100px) {
-    .fq-wrap { grid-template-columns: 1fr; gap: 40px; padding: 56px 32px; }
-  }
-  @media (max-width: 640px) {
-    .fq-wrap { padding: 40px 24px; }
-  }
+}
 `;

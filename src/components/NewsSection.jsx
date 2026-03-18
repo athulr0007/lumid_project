@@ -5,10 +5,17 @@ function useReveal(ref, delay = 0) {
     const el = ref.current;
     if (!el) return;
     el.style.transitionDelay = `${delay}ms`;
+
     const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) { el.classList.add("ns-vis"); obs.disconnect(); } },
+      ([e]) => {
+        if (e.isIntersecting) {
+          el.classList.add("ns-vis");
+          obs.disconnect();
+        }
+      },
       { threshold: 0.07 }
     );
+
     obs.observe(el);
     return () => obs.disconnect();
   }, [delay]);
@@ -38,21 +45,27 @@ const newsItems = [
 export default function NewsSection() {
   const headRef = useRef(null);
   const gridRef = useRef(null);
+
   useReveal(headRef);
   useReveal(gridRef, 100);
 
   return (
     <>
       <style>{css}</style>
+
       <section className="ns-wrap">
         <div className="ns-head ns-fade" ref={headRef}>
           <h2 className="ns-title">News & Insights.</h2>
+
           <div className="ns-right">
             <p className="ns-sub">
-              Explore the latest from Source<sup>®</sup> — product updates, thought
-              pieces, and ideas driving the future of intelligent systems.
+              Explore the latest from Source<sup>®</sup> — product updates,
+              thought pieces, and ideas driving the future of intelligent systems.
             </p>
-            <a className="ns-all" href="#">All news ↗</a>
+
+            <a className="ns-all" href="#">
+  <span>All news ↗</span>
+</a>
           </div>
         </div>
 
@@ -67,11 +80,15 @@ export default function NewsSection() {
               <div className="ns-img-wrap">
                 <img src={n.img} alt="" />
               </div>
+
               <div className="ns-meta">
                 <div className="ns-tag-row">
-                  <span className="ns-sq" /> {n.tag}
-                  <span className="ns-sep">■</span> {n.date}
+                  <span className="ns-sq" />
+                  {n.tag}
+                  <span className="ns-sep">■</span>
+                  {n.date}
                 </div>
+
                 <div className="ns-card-title">{n.title}</div>
               </div>
             </a>
@@ -83,84 +100,209 @@ export default function NewsSection() {
 }
 
 const css = `
-  .ns-fade {
-    opacity: 0; transform: translateY(30px);
-    transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1),
-                transform 0.7s cubic-bezier(0.16,1,0.3,1);
-  }
-  .ns-vis { opacity: 1; transform: none; }
+/* reveal */
+.ns-fade {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1),
+              transform 0.7s cubic-bezier(0.16,1,0.3,1);
+}
+.ns-vis {
+  opacity: 1;
+  transform: none;
+}
 
+/* layout */
+.ns-wrap {
+  padding: 80px 60px;
+  border-top: 1px solid #ddd9d1;
+  background: #f5f2ec;
+}
+
+.ns-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 48px;
+  margin-bottom: 38px;
+}
+
+.ns-title {
+  font-size: clamp(28px, 3.2vw, 66px);
+  font-weight: 600;
+  letter-spacing: -1.2px;
+  line-height: 1.1;
+  margin: 0;
+  color: #0d0d0d;
+}
+
+.ns-right {
+  text-align: left;
+}
+
+.ns-sub {
+  font-size: 17px;
+  color: #555;
+  line-height: 1.65;
+  max-width: 580px;
+  margin: 0 0 10px;
+  font-weight: 600;
+}
+
+.ns-sub sup {
+  font-size: 60%;
+  vertical-align: super;
+}
+
+/* container */
+.ns-all {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  color: #0d0d0d;
+  font-size: 19px;
+  font-weight: 500;
+  text-decoration: none; /* remove moving underline */
+  padding-bottom: 4px; /* space for underline */
+}
+
+/* fixed underline */
+.ns-all::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0; /* inside, not outside */
+  width: 100%;
+  height: 2px;
+  background: #0d0d0d;
+}
+
+/* animated text */
+.ns-all span {
+  display: inline-block;
+  position: relative;
+  transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
+}
+
+/* second text layer */
+.ns-all span::after {
+  content: "All news ↗";
+  position: absolute;
+  left: 0;
+  top: 100%;
+}
+
+/* roll */
+.ns-all:hover span {
+  transform: translateY(-100%);
+}
+
+/* grid */
+.ns-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid #ddd9d1;
+}
+
+.ns-card {
+  border-right: 1px solid #ddd9d1;
+  overflow: hidden;
+  text-decoration: none;
+  display: block;
+  cursor: pointer;
+}
+
+.ns-card:last-child {
+  border-right: none;
+}
+
+/* image zoom */
+.ns-img-wrap {
+  height: 430px;
+  overflow: hidden;
+}
+
+.ns-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1);
+  transition: transform 0.7s cubic-bezier(0.16,1,0.3,1);
+}
+
+.ns-card:hover .ns-img-wrap img {
+  transform: scale(1.12);
+}
+
+/* meta */
+.ns-meta {
+  padding: 24px;
+}
+
+.ns-tag-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 16px;
+  color: #888;
+  margin-bottom: 12px;
+}
+
+/* rotating square */
+.ns-sq {
+  width: 13px;
+  height: 13px;
+  background: #0d0d0d;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.16,1,0.3,1),
+              background 0.3s ease;
+}
+
+.ns-card:hover .ns-sq {
+  transform: rotate(360deg);
+  background: #22c55e;
+}
+
+.ns-sep {
+  font-size: 8px;
+}
+
+.ns-card-title {
+  font-size: 22px;
+  font-weight: 450;
+  line-height: 1.3;
+  letter-spacing: -0.3px;
+  color: #0d0d0d;
+}
+
+/* responsive */
+@media (max-width: 1100px) {
   .ns-wrap {
-    padding: 80px 60px;
-    border-top: 1px solid #ddd9d1;
-    background: #f5f2ec;
+    padding: 56px 32px;
   }
+
   .ns-head {
-    display: flex; align-items: flex-start;
-    justify-content: space-between; gap: 48px;
-    margin-bottom: 48px;
+    flex-direction: column;
+    gap: 16px;
   }
-  .ns-title {
-    font-size: clamp(28px, 3.2vw, 46px);
-    font-weight: 900; letter-spacing: -1.2px;
-    line-height: 1.1; margin: 0; color: #0d0d0d;
+
+  .ns-right {
+    text-align: left;
   }
-  .ns-right { text-align: right; }
-  .ns-sub {
-    font-size: 15px; color: #555; line-height: 1.65;
-    max-width: 380px; margin: 0 0 10px;
+}
+
+@media (max-width: 640px) {
+  .ns-wrap {
+    padding: 40px 24px;
   }
-  .ns-sub sup { font-size: 60%; vertical-align: super; }
-  .ns-all {
-    font-size: 14px; font-weight: 700; color: #0d0d0d;
-    text-decoration: underline; text-underline-offset: 3px;
-    transition: opacity 0.2s;
-  }
-  .ns-all:hover { opacity: 0.6; }
 
   .ns-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr);
-    border-top: 1px solid #ddd9d1;
+    grid-template-columns: 1fr;
   }
+
   .ns-card {
-    border-right: 1px solid #ddd9d1;
-    overflow: hidden; cursor: pointer;
-    text-decoration: none; display: block;
-    transition: background 0.18s;
+    border-right: none;
+    border-bottom: 1px solid #ddd9d1;
   }
-  .ns-card:last-child { border-right: none; }
-  .ns-card:hover { background: rgba(0,0,0,0.02); }
-
-  .ns-img-wrap { height: 280px; overflow: hidden; }
-  .ns-img-wrap img {
-    width: 100%; height: 100%; object-fit: cover; display: block;
-    transition: transform 0.5s cubic-bezier(0.16,1,0.3,1);
-  }
-  .ns-card:hover .ns-img-wrap img { transform: scale(1.05); }
-
-  .ns-meta { padding: 24px; }
-  .ns-tag-row {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 12px; color: #888; margin-bottom: 12px;
-  }
-  .ns-sq {
-    width: 7px; height: 7px; background: #0d0d0d;
-    flex-shrink: 0; display: block;
-  }
-  .ns-sep { font-size: 8px; }
-  .ns-card-title {
-    font-size: 18px; font-weight: 800;
-    line-height: 1.3; letter-spacing: -0.3px; color: #0d0d0d;
-  }
-
-  @media (max-width: 1100px) {
-    .ns-wrap { padding: 56px 32px; }
-    .ns-head { flex-direction: column; gap: 16px; }
-    .ns-right { text-align: left; }
-  }
-  @media (max-width: 640px) {
-    .ns-wrap { padding: 40px 24px; }
-    .ns-grid { grid-template-columns: 1fr; }
-    .ns-card { border-right: none; border-bottom: 1px solid #ddd9d1; }
-  }
+}
 `;

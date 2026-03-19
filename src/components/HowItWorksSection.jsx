@@ -47,6 +47,100 @@ function useReveal(ref) {
   }, []);
 }
 
+/* ===== FIXED STACK ANIMATION ===== */
+function useStackAnimation(ref) {
+  useEffect(() => {
+    const section = ref.current;
+    if (!section) return;
+
+    const wrap = section.querySelector(".hw-diagonal-wrap");
+    const cards = Array.from(section.querySelectorAll(".hw-card-diagonal"));
+
+    if (!wrap || cards.length < 2) return;
+
+    let offsets = [];
+    const initOffsets = () => {
+      // Remove any existing transforms to get pure, accurate CSS layout differences
+      const prevTransforms = cards.map(c => c.style.transform);
+      cards.forEach(card => card.style.transform = 'none');
+
+      const baseTop = cards[0].getBoundingClientRect().top;
+      offsets = cards.map((card, i) =>
+        i === 0 ? 0 : baseTop - card.getBoundingClientRect().top
+      );
+
+      // Restore transforms
+      cards.forEach((card, i) => card.style.transform = prevTransforms[i] || '');
+
+      // Let the original CSS 400vh handle the deep stick duration, remove inline override
+      wrap.style.height = '';
+
+      // === REMOVE THE UNWANTED BOTTOM VOID ===
+      // Because Card 4 starts at the bottom and translates up to align, it naturally leaves exactly
+      // 'maxOffset' pixels of empty void space beneath it inside the track.
+      // We physically pull the next section up to cover this void perfectly, leaving only a 20px gap.
+      const maxOffset = Math.abs(offsets[cards.length - 1]);
+      const paddingBottom = parseFloat(window.getComputedStyle(wrap).paddingBottom) || 0;
+      const targetGap = 70;
+      
+      // Apply negative margin to the OUTermost section so it perfectly pulls the next React 
+      // component on the page up to cover the empty track space. Also prevent this on mobile.
+      if (window.innerWidth > 900) {
+        section.style.marginBottom = `-${maxOffset + paddingBottom - targetGap}px`;
+        wrap.style.marginBottom = '0px'; 
+      } else {
+        section.style.marginBottom = '0px';
+        wrap.style.marginBottom = '0px';
+      }
+    };
+    initOffsets();
+
+    const handleScroll = () => {
+      const rect = wrap.getBoundingClientRect();
+      const vh = window.innerHeight;
+
+      const total = wrap.offsetHeight - vh;
+      if (total <= 0) return;
+
+      const scrolled = Math.min(Math.max(-rect.top, 0), total);
+      const progress = scrolled / total;
+
+      // The maximum distance the LAST card needs to travel
+      const maxOffset = Math.abs(offsets[cards.length - 1]);
+
+      // Scrub the short physical travel distance over the entire massive 400vh track
+      // Because it finishes exactly at progress = 1.0, there is zero unwanted bottom.
+      const simulatedScroll = progress * maxOffset;
+
+      cards.forEach((card, i) => {
+        if (i === 0) return;
+
+        const cardMaxTravel = Math.abs(offsets[i]);
+
+        // As you scroll, they scrub smoothly and cap exactly when they align
+        let travel = Math.min(simulatedScroll, cardMaxTravel);
+
+        card.style.transform = `translateY(-${travel}px)`;
+      });
+    };
+
+    const onResize = () => {
+      initOffsets();
+      handleScroll();
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("resize", onResize);
+
+    handleScroll();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", onResize);
+    };
+  }, []);
+}
+
 function DiagonalCards() {
   return (
     <div className="hw-diagonal-wrap">
@@ -73,13 +167,16 @@ function DiagonalCards() {
 
 export default function HowItWorksSection() {
   const headRef = useRef(null);
+  const sectionRef = useRef(null);
+
   useReveal(headRef);
+  useStackAnimation(sectionRef);
 
   return (
     <>
       <style>{css}</style>
 
-      <section className="hw-wrap">
+      <section ref={sectionRef} className="hw-wrap">
         <div ref={headRef} className="hw-fade hw-header">
           <div>
             <h2 className="hw-title">
@@ -109,6 +206,20 @@ const css = `
     overflow: visible;
   }
 
+  /* ===== CORRECT PIN AREA ===== */
+  .hw-diagonal-wrap {
+    padding: 0 54px 100px;
+    box-sizing: border-box;
+    position: relative;
+    height: 400vh; /* scroll space */
+  }
+
+  .hw-diagonal-track {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+
   .hw-fade {
     opacity: 0;
     transform: translateY(28px);
@@ -133,7 +244,7 @@ const css = `
 
   .hw-title {
     margin: 0;
-    max-width: 760px;
+    max-width: 860px;
     color: #111111;
     font-size: clamp(44px, 4vw, 76px);
     line-height: 0.96;
@@ -150,239 +261,53 @@ const css = `
     letter-spacing: -0.015em;
   }
 
-  .hw-desc sup {
-    font-size: 60%;
-    vertical-align: super;
-  }
-
-  .hw-diagonal-wrap {
-    padding: 0 54px 100px;
-    box-sizing: border-box;
-    overflow: visible;
-  }
-
   .hw-diagonal-track {
-    position: relative;
     width: 100%;
-    height: 820px;
   }
 
   .hw-card {
     position: relative;
     padding: 28px 20px 22px;
-    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    overflow: hidden;
   }
 
   .hw-card-diagonal {
     position: absolute;
-    width: calc(25% - 2px);
-    height: 430px;
+    width: calc(25% - 5px);
+    height: 460px;
+    will-change: transform;
   }
 
-  .hw-card-pos-4 {
-    right: 0;
-    bottom: 0;
-  }
+  .hw-card-pos-4 { right: 0; bottom: 0; }
+  .hw-card-pos-3 { right: 25%; bottom: 130px; }
+  .hw-card-pos-2 { right: 50%; bottom: 260px; }
+  .hw-card-pos-1 { right: 75%; bottom: 390px; }
 
-  .hw-card-pos-3 {
-    right: 25%;
-    bottom: 130px;
-  }
-
-  .hw-card-pos-2 {
-    right: 50%;
-    bottom: 260px;
-  }
-
-  .hw-card-pos-1 {
-    right: 75%;
-    bottom: 390px;
-  }
-
-  .hw-card-default {
-    background: rgb(238, 236, 227);
-    color: #0d0d0d;
-  }
-
-  .hw-card-green {
-    background: rgb(91, 251, 122);
-    color: #0d0d0d;
-  }
-
-  .hw-card-blue {
-    background: rgb(50, 85, 255);
-    color: rgb(251, 249, 239);
-  }
-
-  .hw-card-dark {
-    background: rgb(13, 10, 10);
-    color: rgb(251, 249, 239);
-  }
+  .hw-card-default { background: rgb(238,236,227); color:#0d0d0d; }
+  .hw-card-green { background: rgb(91,251,122); color:#0d0d0d; }
+  .hw-card-blue { background: rgb(50,85,255); color:#fff; }
+  .hw-card-dark { background: rgb(13,10,10); color:#fff; }
 
   .hw-bg-num {
-    position: absolute;
-    top: -6px;
-    right: -8px;
-    font-size: clamp(128px, 12vw, 210px);
-    line-height: 0.82;
-    letter-spacing: -0.07em;
-    font-weight: 900;
-    pointer-events: none;
-    user-select: none;
-    color: rgba(0, 0, 0, 0.06);
+    position:absolute;
+    top:-6px;
+    right:-8px;
+    font-size:clamp(128px,12vw,210px);
+    opacity:0.06;
   }
 
-  .hw-card-blue .hw-bg-num,
-  .hw-card-dark .hw-bg-num {
-    color: rgba(255, 255, 255, 0.07);
+  .hw-step-name { font-size:clamp(26px,2vw,42px); }
+  .hw-step-text { font-size:13px; }
+
+  @media (max-width:900px){
+    .hw-diagonal-wrap{height:auto;}
+    .hw-diagonal-track{position:static;height:auto;display:grid;grid-template-columns:1fr 1fr;}
+    .hw-card-diagonal{position:relative;width:100%;height:320px;transform:none !important;}
   }
 
-  .hw-card-top {
-    position: relative;
-    z-index: 1;
-  }
-
-  .hw-step-num {
-    margin: 0 0 4px;
-    font-size: 20px;
-    line-height: 1;
-    letter-spacing: -0.04em;
-    font-weight: 500;
-  }
-
-  .hw-step-name {
-    margin: 0;
-    font-size: clamp(26px, 2.05vw, 42px);
-    line-height: 1;
-    letter-spacing: -0.05em;
-    font-weight: 500;
-  }
-
-  .hw-step-text {
-    position: relative;
-    z-index: 1;
-    margin: 0;
-    max-width: 95%;
-    font-size: 13px;
-    line-height: 1.48;
-    letter-spacing: -0.02em;
-    font-weight: 500;
-    color: inherit;
-  }
-
-  .hw-card-default .hw-step-text,
-  .hw-card-green .hw-step-text {
-    color: rgba(13, 13, 13, 0.92);
-  }
-
-  .hw-card-blue .hw-step-text,
-  .hw-card-dark .hw-step-text {
-    color: rgba(251, 249, 239, 0.94);
-  }
-
-  @media (max-width: 1200px) {
-    .hw-header {
-      grid-template-columns: 1fr;
-      gap: 20px;
-      padding: 64px 32px 34px;
-    }
-
-    .hw-desc {
-      max-width: 430px;
-    }
-
-    .hw-diagonal-wrap {
-      padding: 0 32px 80px;
-    }
-
-    .hw-diagonal-track {
-      height: 700px;
-    }
-
-    .hw-card-diagonal {
-      height: 380px;
-    }
-
-    .hw-card-pos-4 {
-      right: 0;
-      bottom: 0;
-    }
-
-    .hw-card-pos-3 {
-      right: 25%;
-      bottom: 105px;
-    }
-
-    .hw-card-pos-2 {
-      right: 50%;
-      bottom: 210px;
-    }
-
-    .hw-card-pos-1 {
-      right: 75%;
-      bottom: 315px;
-    }
-  }
-
-  @media (max-width: 900px) {
-    .hw-diagonal-wrap {
-      padding: 0 24px 40px;
-    }
-
-    .hw-diagonal-track {
-      position: static;
-      height: auto;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0;
-    }
-
-    .hw-card-diagonal {
-      position: relative;
-      width: 100%;
-      height: 320px;
-      right: auto !important;
-      bottom: auto !important;
-    }
-  }
-
-  @media (max-width: 640px) {
-    .hw-header {
-      padding: 44px 20px 26px;
-    }
-
-    .hw-title {
-      font-size: clamp(34px, 10vw, 52px);
-    }
-
-    .hw-diagonal-wrap {
-      padding: 0 20px 20px;
-    }
-
-    .hw-diagonal-track {
-      grid-template-columns: 1fr;
-    }
-
-    .hw-card-diagonal {
-      height: 260px;
-      padding: 22px 18px 18px;
-    }
-
-    .hw-step-num {
-      font-size: 16px;
-    }
-
-    .hw-step-name {
-      font-size: 22px;
-    }
-
-    .hw-step-text {
-      font-size: 12px;
-      line-height: 1.45;
-    }
+  @media (max-width:640px){
+    .hw-diagonal-track{grid-template-columns:1fr;}
   }
 `;

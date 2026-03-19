@@ -22,7 +22,7 @@ body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background: #f5f2ec;
   color: #0d0d0d;
-  overflow-x: hidden;
+  overflow-x: clip; /* clip allows position: sticky to work; hidden breaks it! */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* NO max-width, NO padding, NO margin */

@@ -97,10 +97,15 @@ export default function AboutSection() {
           <div className="ab-right-inner">
             <ScrollRevealText text={aboutText} />
 
-            <a className="ab-btn" href="#">
-              <span>About us</span>
-              <svg
-                className="ab-btn-icon"
+        <a className="ab-btn" href="#">
+  <span className="ab-btn-roll">
+    <span className="ab-btn-track">
+      <span>About us</span>
+      <span>About us</span>
+    </span>
+  </span>
+
+  <svg className="ab-btn-icon"
                 width="18"
                 height="18"
                 viewBox="0 0 18 18"
@@ -231,18 +236,43 @@ const css = `
     transition: background-color 0.18s ease;
   }
 
-  .ab-btn:hover {
-    background: #1b1616;
-  }
+.ab-btn-roll{
+  height:1em;
+  overflow:hidden;
+  display:inline-block;
+  line-height:1;
+}
+
+.ab-btn-track{
+  display:flex;
+  flex-direction:column;
+}
+
+
+
+
+.ab-btn:hover .ab-btn-track{
+  animation: btnRollOnce 0.45s ease forwards;
+}
+  .ab-btn-track span{
+  height:1em;
+  display:flex;
+  align-items:center;
+}
+  @keyframes btnRollOnce{
+  0%{ transform: translateY(0); }
+  100%{ transform: translateY(-50%); }
+}
+  .ab-btn:not(:hover) .ab-btn-track{
+  transform: translateY(0);
+}
 
   .ab-btn-icon {
     flex: 0 0 auto;
     transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .ab-btn:hover .ab-btn-icon {
-    transform: translate(2px, -2px);
-  }
+
 
   @media (max-width: 1200px) {
     .ab-wrap {

@@ -24,21 +24,22 @@ export default function TrustedSection() {
               build scalable AI systems that drive efficiency and growth.
             </p>
           </div>
-
-          <div className="trusted__logos">
-            {logos.map((logo, i) => (
-              <div className="trusted__logoItem" key={i}>
-                <span
-                  className={`trusted__logoSym ${
-                    logo.bold ? "trusted__logoSym--bold" : ""
-                  }`}
-                >
-                  {logo.sym}
-                </span>
-                <span className="trusted__logoName">{logo.label}</span>
-              </div>
-            ))}
-          </div>
+<div className="trusted__logos">
+  <div className="trusted__track">
+    {[...logos, ...logos].map((logo, i) => (
+      <div className="trusted__logoItem" key={i}>
+        <span
+          className={`trusted__logoSym ${
+            logo.bold ? "trusted__logoSym--bold" : ""
+          }`}
+        >
+          {logo.sym}
+        </span>
+        <span className="trusted__logoName">{logo.label}</span>
+      </div>
+    ))}
+  </div>
+</div>
         </div>
       </section>
     </>
@@ -62,12 +63,16 @@ const css = `
     background:var(--trusted-bg);
     border-top:1px solid var(--trusted-line);
     border-bottom:1px solid var(--trusted-line);
+
   }
 
-  .trusted__inner{
-    width:100%;
-    padding:0 66px;
-  }
+.trusted__inner{
+  max-width:1900px;
+  margin:0 auto;
+  padding:0 66px;
+  border-left:1px solid var(--trusted-line);
+  border-right:1px solid var(--trusted-line);
+}
 
   .trusted__header{
     display:grid;
@@ -79,11 +84,12 @@ const css = `
 
   .trusted__title{
     margin:0;
-    font-size:31px;
+    font-size:39px;
     line-height:1.02;
     letter-spacing:-0.055em;
-    font-weight:700;
+    font-weight:500;
     color:var(--trusted-text);
+    border-left:1px solid var(--trusted-line);
   }
 
   .trusted__desc{
@@ -95,30 +101,41 @@ const css = `
     color:var(--trusted-muted);
   }
 
-  .trusted__logos{
-    display:grid;
-    grid-template-columns:repeat(8, 1fr);
-    border-top:1px solid var(--trusted-line);
-  }
+.trusted__logos{
+  display:grid;
+  overflow:hidden;
+  grid-template-columns:repeat(8, 1fr);
+  border-left:1px solid var(--trusted-line);
+  border-right:1px solid var(--trusted-line);
+}
+
+.trusted__track{
+  display:flex;
+  width:max-content;
+  animation: trustedScroll 22s linear infinite;
+}
 
   .trusted__logoItem{
-    height:92px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:10px;
-    padding:0 14px;
-    border-right:1px solid var(--trusted-line);
-    overflow:hidden;
-  }
-
+  min-width:220px;
+  height:100px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  padding:0 20px;
+  flex-shrink:0;
+}
+@keyframes trustedScroll{
+  0%{ transform: translateX(0); }
+  100%{ transform: translateX(-50%); }
+}
   .trusted__logoItem:last-child{
-    border-right:none;
+    border-right:1px solid var(--trusted-line);
   }
 
   .trusted__logoSym{
     flex:0 0 auto;
-    font-size:20px;
+    font-size:30px;
     line-height:1;
     color:var(--trusted-text);
   }
@@ -131,7 +148,7 @@ const css = `
 
   .trusted__logoName{
     min-width:0;
-    font-size:15px;
+    font-size:19px;
     line-height:1;
     font-weight:700;
     letter-spacing:-0.02em;

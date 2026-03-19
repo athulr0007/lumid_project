@@ -17,10 +17,15 @@ export default function HeroSection() {
           <div className="hero__imageWrap">
             <div className="hero__imageMask" />
             <img
-              className="hero__image"
-              src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1200&q=85"
-              alt="Source team"
-            />
+  className="hero__image"
+  src="https://framerusercontent.com/images/TyaUbMGncOBrq3gBsLs0oNCJeE.jpg?width=3580&height=2574"
+  srcSet="https://framerusercontent.com/images/TyaUbMGncOBrq3gBsLs0oNCJeE.jpg?scale-down-to=512&width=3580&height=2574 512w,
+          https://framerusercontent.com/images/TyaUbMGncOBrq3gBsLs0oNCJeE.jpg?scale-down-to=1024&width=3580&height=2574 1024w,
+          https://framerusercontent.com/images/TyaUbMGncOBrq3gBsLs0oNCJeE.jpg?scale-down-to=2048&width=3580&height=2574 2048w,
+          https://framerusercontent.com/images/TyaUbMGncOBrq3gBsLs0oNCJeE.jpg?width=3580&height=2574 3580w"
+  sizes="(max-width: 768px) 100vw, 50vw"
+  alt="a couple of men standing next to each other"
+/>
           </div>
 
           <div className="hero__desc">
@@ -91,18 +96,21 @@ export default function HeroSection() {
             </div>
           </div>
 
-          <a className="hero__cta" href="#">
-            <span>Book a strategy call</span>
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <path
-                d="M4 16L16 4M16 4H6M16 4v10"
-                stroke="white"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </a>
+  <a className="hero__cta" href="#">
+  <span className="hero__ctaText">
+    <span>Book a strategy call</span>
+    <span>Book a strategy call</span>
+  </span>
+  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+    <path
+      d="M4 16L16 4M16 4H6M16 4v10"
+      stroke="white"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+</a>
         </div>
       </section>
     </>
@@ -136,13 +144,13 @@ const css = `
     position:relative;
     left:50%;
     margin-left:-50vw;
-    margin-top:64px;
+    margin-top:94px;
     background:var(--bg);
-    border-top:1px solid var(--line);
     border-bottom:1px solid var(--line);
     display:grid;
     grid-template-columns:50.6% 49.4%;
-    min-height:612px;
+    min-height:auto;
+    
   }
 
   .hero__left{
@@ -164,50 +172,35 @@ const css = `
     display:block;
     object-fit:cover;
     object-position:center center;
-    clip-path:polygon(
-      19.2% 0,
-      100% 0,
-      100% 100%,
-      0 100%,
-      0 35%
-    );
-  }
+  clip-path: polygon(
+     0% 22%,   /* vertical down */
+     22% 22%,  /* corner */
+     32% 0%,
+    100% 0%,
+    100% 78%,   /* bottom-right cut */
+    100% 100%,
+    0% 100%
+  );
+}
 
-  .hero__imageMask{
-    position:absolute;
-    top:0;
-    left:54px;
-    width:calc(100% - 54px);
-    height:100%;
-    background:var(--bg);
-    pointer-events:none;
-    z-index:2;
-    clip-path:polygon(
-      0 0,
-      19.2% 0,
-      0 35%
-    );
-  }
 
   .hero__desc{
-    border-top:1px solid var(--line);
     padding:21px 26px 0 74px;
-    font-size:15px;
+    font-size:19px;
     line-height:1.45;
-    font-weight:400;
+    font-weight:450;
     color:var(--muted);
-    max-width:860px;
+    max-width:990px;
   }
 
   .hero__right{
     min-width:0;
-    border-left:1px solid var(--line);
     display:grid;
     grid-template-rows:1fr 98px;
   }
 
   .hero__top{
-    padding:18px 0 0 22px;
+    padding:18px 74px 0 74px;
     display:flex;
     flex-direction:column;
     min-height:0;
@@ -250,15 +243,16 @@ const css = `
   .hero__title{
     margin:0;
     max-width:760px;
-    font-size:67px;
+    font-size:80px;
     line-height:0.935;
     letter-spacing:-0.064em;
-    font-weight:700;
+    font-weight:500;
     color:var(--text);
+    margin-bottom:90px;
   }
 
   .hero__trust{
-    margin-top:auto;
+    margin-top:20px;
     display:flex;
     align-items:center;
     gap:13px;
@@ -276,7 +270,7 @@ const css = `
     height:34px;
     border-radius:999px;
     overflow:hidden;
-    border:2px solid var(--bg);
+    border:2px solid var(--black);
     background:#cec7bb;
     margin-left:-9px;
     flex-shrink:0;
@@ -295,8 +289,9 @@ const css = `
 
   .hero__trustMeta{
     display:flex;
-    align-items:center;
-    gap:12px;
+  flex-direction:column;
+  align-items:flex-start;
+    gap:2px;
     flex-wrap:wrap;
   }
 
@@ -323,25 +318,27 @@ const css = `
   }
 
   .hero__trustText{
-    font-size:13px;
+    font-size:15px;
     line-height:1;
     color:#3f3f39;
-    white-space:nowrap;
+    white-space:normal;
+    font-weight:450;
   }
 
   .hero__cta{
-    width:100%;
-    height:98px;
+    width:850px;
+    height:120px;
     background:var(--black);
     color:#ffffff;
     text-decoration:none;
     display:flex;
     align-items:center;
     justify-content:space-between;
-    padding:0 39px;
+    padding:0 74px;
     font-size:17px;
     font-weight:500;
     line-height:1;
+     margin-top:-55px;
   }
 
   .hero__cta svg{
@@ -361,7 +358,7 @@ const css = `
     .hero__right{
       border-left:none;
       border-top:1px solid var(--line);
-      grid-template-rows:auto 90px;
+      grid-template-rows:auto 98px;
     }
 
     .hero__top{
@@ -445,4 +442,25 @@ const css = `
       font-size:16px;
     }
   }
+    .hero__ctaText{
+  display:block;
+  height:20px;
+  overflow:hidden;
+  position:relative;
+}
+
+.hero__ctaText span{
+  display:block;
+  transition:transform 0.35s ease;
+}
+
+.hero__ctaText span:last-child{
+  position:absolute;
+  top:100%;
+  left:0;
+}
+
+.hero__cta:hover .hero__ctaText span{
+  transform:translateY(-100%);
+}
 `;

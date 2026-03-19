@@ -20,32 +20,46 @@ export default function NavBar() {
     <>
       <style>{css}</style>
       <nav className="nb-nav">
-        <div className="nb-logo">SOURCE<sup>®</sup></div>
-
-        <div className="nb-center">
-          <span className="nb-pulse" />
-          London, UK &nbsp;&nbsp; {time}
+        {/* Left Side: Logo */}
+        <div className="nb-logo">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" style={{ marginRight: '10px' }}>
+            <path d="M 0 13 L 5 4 L 9 4 L 4 13 Z M 7 13 L 12 4 L 16 4 L 11 13 Z" />
+          </svg>
+          SOURCE<sup>®</sup>
         </div>
 
-        <div className="nb-links">
+        {/* Huge empty expanse pushing items apart */}
+        <div className="nb-spacer" />
+
+        {/* Right Side: Grouped Navigation Elements */}
+        <div className="nb-right-group">
+          <div className="nb-location">
+            London, UK 
+            <span className="nb-pulse-square" />
+            {time}
+          </div>
+
           <div className="nb-link">
             Company
             <svg width="10" height="6" viewBox="0 0 10 6" fill="none">
               <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
+          
           <div className="nb-link">
             Portfolio
             <svg width="10" height="6" viewBox="0 0 10 6" fill="none">
               <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
+          
           <div className="nb-link">
             Expertise
             <svg width="10" height="6" viewBox="0 0 10 6" fill="none">
               <path d="M1 1l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
+          
           <div className="nb-contact">Contact</div>
         </div>
       </nav>
@@ -69,83 +83,94 @@ const css = `
     display: flex;
     align-items: center;
     padding: 0 28px;
-    font-size: 17px;
-    font-weight: 900;
-    letter-spacing: -0.3px;
-    border-right: 1px solid #ddd9d1;
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
     cursor: pointer;
     white-space: nowrap;
     transition: opacity 0.2s;
     color: #0d0d0d;
   }
-  .nb-logo sup { font-size: 9px; vertical-align: super; margin-left: 1px; }
+  .nb-logo sup { 
+    font-size: 9px; 
+    vertical-align: super; 
+    margin-left: 2px; 
+  }
   .nb-logo:hover { opacity: 0.65; }
 
-  .nb-center {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    font-size: 13px;
-    color: #888;
-    font-weight: 400;
-    letter-spacing: 0;
+  .nb-spacer {
+    flex: 1; /* Pushes the right-group flush to the right */
   }
 
-  .nb-pulse {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #00e547;
-    animation: nb-pulse-anim 2.5s ease-in-out infinite;
-    flex-shrink: 0;
-  }
-  @keyframes nb-pulse-anim {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50%       { opacity: 0.45; transform: scale(0.8); }
-  }
-
-  .nb-links {
+  .nb-right-group {
     display: flex;
     align-items: stretch;
+
+  }
+
+  .nb-location {
+    display: flex;
+    align-items: center;
+    padding: 0 32px;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #111111;
+    gap: 12px;
+    white-space: nowrap;
+  }
+
+  /* Matching the exact green square from reference */
+  .nb-pulse-square {
+    display: block;
+    width: 10px;
+    height: 10px;
+    background: #00e547;
+    border-radius: 1px;
+    flex-shrink: 0;
   }
 
   .nb-link {
     display: flex;
     align-items: center;
-    gap: 5px;
-    padding: 0 22px;
+    gap: 8px;
+    padding: 0 28px;
     font-size: 13.5px;
     font-weight: 500;
-    color: #0d0d0d;
+    color: #111111;
     border-left: 1px solid #ddd9d1;
     cursor: pointer;
     user-select: none;
     transition: background 0.15s;
     white-space: nowrap;
+    width: 220px;
   }
-  .nb-link:hover { background: rgba(0,0,0,0.04); }
-  .nb-link svg { opacity: 0.45; flex-shrink: 0; }
+  .nb-link:hover { background: rgba(0,0,0,0.03); }
+  .nb-link svg { opacity: 0.5; flex-shrink: 0; }
 
   .nb-contact {
     display: flex;
     align-items: center;
     padding: 0 32px;
-    font-size: 13.5px;
-    font-weight: 700;
-    background: #00e547;
+    font-size: 16px;
+    font-weight: 550;
+    background: #26ef66;
     color: #0d0d0d;
     border-left: 1px solid #ddd9d1;
     cursor: pointer;
     white-space: nowrap;
-    transition: background 0.15s;
+    transition: filter 0.15s;
+    width: 250px;
   }
-  .nb-contact:hover { background: #00cf3f; }
+  .nb-contact:hover { 
+    filter: brightness(0.95); 
+  }
+
+  @media (max-width: 1100px) {
+    .nb-location { display: none; }
+  }
 
   @media (max-width: 768px) {
-    .nb-links { display: none; }
-    .nb-center { font-size: 12px; justify-content: flex-start; padding-left: 20px; }
+    .nb-link { display: none; }
+    /* Let the contact button stick around or modify as needed */
   }
 `;

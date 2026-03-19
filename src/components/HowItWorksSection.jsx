@@ -76,18 +76,18 @@ function useStackAnimation(ref) {
       wrap.style.height = '';
 
       // === REMOVE THE UNWANTED BOTTOM VOID ===
-      // Because Card 4 starts at the bottom and translates up to align, it naturally leaves exactly
-      // 'maxOffset' pixels of empty void space beneath it inside the track.
-      // We physically pull the next section up to cover this void perfectly, leaving only a 20px gap.
-      const maxOffset = Math.abs(offsets[cards.length - 1]);
+      // The physical empty void is defined purely by where Card 1 sits relative to the 100vh track's bottom.
+      // E.g., if Card 1 is anchored 390px above the bottom, all cards align there, leaving exactly 390px of void.
+      const track = wrap.querySelector('.hw-diagonal-track');
+      const trackGap = track.getBoundingClientRect().bottom - cards[0].getBoundingClientRect().bottom;
       const paddingBottom = parseFloat(window.getComputedStyle(wrap).paddingBottom) || 0;
       const targetGap = 70;
-      
+
       // Apply negative margin to the OUTermost section so it perfectly pulls the next React 
       // component on the page up to cover the empty track space. Also prevent this on mobile.
       if (window.innerWidth > 900) {
-        section.style.marginBottom = `-${maxOffset + paddingBottom - targetGap}px`;
-        wrap.style.marginBottom = '0px'; 
+        section.style.marginBottom = `-${trackGap + paddingBottom - targetGap}px`;
+        wrap.style.marginBottom = '0px';
       } else {
         section.style.marginBottom = '0px';
         wrap.style.marginBottom = '0px';
@@ -105,8 +105,8 @@ function useStackAnimation(ref) {
       const scrolled = Math.min(Math.max(-rect.top, 0), total);
       const progress = scrolled / total;
 
-      // The maximum distance the LAST card needs to travel
-      const maxOffset = Math.abs(offsets[cards.length - 1]);
+      // The maximum distance any card needs to travel
+      const maxOffset = Math.max(...offsets.map(Math.abs));
 
       // Scrub the short physical travel distance over the entire massive 400vh track
       // Because it finishes exactly at progress = 1.0, there is zero unwanted bottom.
@@ -216,7 +216,7 @@ const css = `
 
   .hw-diagonal-track {
     position: sticky;
-    top: 0;
+    top: 96px; /* 64px navbar + 32px gap */
     height: 100vh;
   }
 
@@ -249,57 +249,90 @@ const css = `
     font-size: clamp(44px, 4vw, 76px);
     line-height: 0.96;
     letter-spacing: -0.06em;
-    font-weight: 900;
+    font-weight: 600;
   }
 
   .hw-desc {
     margin: 0;
-    padding-top: 6px;
+    padding-top: 30px;
     color: #6f6a63;
-    font-size: 15px;
+    font-size: 16px;
     line-height: 1.58;
     letter-spacing: -0.015em;
   }
 
   .hw-diagonal-track {
     width: 100%;
+   
   }
 
   .hw-card {
     position: relative;
-    padding: 28px 20px 22px;
+    padding: 42px 36px 36px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    overflow: hidden;
   }
 
   .hw-card-diagonal {
     position: absolute;
-    width: calc(25% - 5px);
+    width: 25%;
     height: 460px;
     will-change: transform;
   }
 
-  .hw-card-pos-4 { right: 0; bottom: 0; }
-  .hw-card-pos-3 { right: 25%; bottom: 130px; }
-  .hw-card-pos-2 { right: 50%; bottom: 260px; }
+  .hw-card-pos-4 { right: 0; bottom: -810px; }
+  .hw-card-pos-3 { right: 25%; bottom: -410px; }
+  .hw-card-pos-2 { right: 50%; bottom: -10px; }
   .hw-card-pos-1 { right: 75%; bottom: 390px; }
 
-  .hw-card-default { background: rgb(238,236,227); color:#0d0d0d; }
-  .hw-card-green { background: rgb(91,251,122); color:#0d0d0d; }
-  .hw-card-blue { background: rgb(50,85,255); color:#fff; }
-  .hw-card-dark { background: rgb(13,10,10); color:#fff; }
+  .hw-card-default { background: #e4e4e4ff; color:#111111; }
+  .hw-card-green { background: #00e547; color:#111111; }
+  .hw-card-blue { background: #3b5bff; color:#ffffff; }
+  .hw-card-dark { background: #111111; color:#ffffff; }
 
   .hw-bg-num {
-    position:absolute;
-    top:-6px;
-    right:-8px;
-    font-size:clamp(128px,12vw,210px);
-    opacity:0.06;
+    position: absolute;
+    top: -24px;
+    right: -10%;
+    font-size: clamp(160px, 14vw, 240px);
+    line-height: 1;
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    opacity: 0.05;
+    pointer-events: none;
   }
 
-  .hw-step-name { font-size:clamp(26px,2vw,42px); }
-  .hw-step-text { font-size:13px; }
+  .hw-card-top {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .hw-step-num { 
+    margin: 0;
+    font-size: clamp(32px, 3vw, 42px);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  .hw-step-name { 
+    margin: 0;
+    font-size: clamp(20px, 2vw, 24px);
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .hw-step-text { 
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.58;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
 
   @media (max-width:900px){
     .hw-diagonal-wrap{height:auto;}

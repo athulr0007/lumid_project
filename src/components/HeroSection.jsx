@@ -347,120 +347,126 @@ const css = `
 
   @media (max-width:1280px){
     .hero{
-      grid-template-columns:1fr;
-      min-height:auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding: 48px 36px 64px;
+      gap: 32px 48px;
+      margin-top: 64px;
+      width: 100%;
+      left: auto;
+      margin-left: 0;
     }
-
-    .hero__left{
-      grid-template-rows:420px auto;
+    .hero__left, .hero__right, .hero__top {
+      display: contents;
     }
-
-    .hero__right{
-      border-left:none;
-      border-top:1px solid var(--line);
-      grid-template-rows:auto 98px;
+    .hero__badge {
+      display: none;
     }
-
-    .hero__top{
-      padding:18px 18px 18px 18px;
+    .hero__imageWrap {
+      grid-column: 1 / 2;
+      grid-row: 1 / 3;
+      order: 1;
+      padding-left: 0;
+      width: 100%;
+      height: 100%;
+      min-height: 380px;
     }
-
-    .hero__cta{
-      height:90px;
-      padding:0 24px;
+    .hero__image {
+      clip-path: none;
     }
-
-    .hero__title{
-      font-size:56px;
+    .hero__imageMask {
+      display: none;
+    }
+    .hero__title {
+      grid-column: 2 / 3;
+      grid-row: 1;
+      order: 2;
+      font-size: clamp(40px, 5vw, 60px);
+      margin-bottom: 0;
+      padding: 0;
+      align-self: start;
+    }
+    .hero__trust {
+      grid-column: 2 / 3;
+      grid-row: 2;
+      order: 3;
+      align-self: start;
+      margin-top: -12px;
+      padding-bottom: 0;
+    }
+    .hero__desc {
+      grid-column: 1 / 3;
+      grid-row: 3;
+      order: 4;
+      padding: 16px 0 0;
+      font-size: 18px;
+      max-width: 100%;
+      line-height: 1.55;
+    }
+    .hero__cta {
+      grid-column: 1 / 3;
+      grid-row: 4;
+      order: 5;
+      width: 100%;
+      height: 84px;
+      margin-top: 24px;
+      padding: 0 40px;
     }
   }
 
   @media (max-width:768px){
     .hero{
-      margin-top:64px;
+      display: flex;
+      flex-direction: column;
+      padding: 32px 24px 48px;
+      gap: 24px;
+      margin-top: 64px;
     }
-
-    .hero__left{
-      grid-template-rows:300px auto;
+    .hero__imageWrap {
+      width: 100%;
+      height: auto;
+      min-height: 280px;
     }
-
-    .hero__imageWrap{
-      padding-left:18px;
+    .hero__title {
+      font-size: 44px;
+      line-height: 1.02;
+      letter-spacing: -0.05em;
     }
-
-    .hero__image{
-      clip-path:none;
+    .hero__trust {
+      margin-top: 0;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
     }
-
-    .hero__imageMask{
-      display:none;
+    .hero__desc {
+      padding: 0;
+      font-size: 16px;
+      line-height: 1.5;
     }
-
-    .hero__desc{
-      padding:18px;
-      font-size:14px;
-      line-height:1.5;
-    }
-
-    .hero__top{
-      padding:18px 18px 14px 18px;
-    }
-
-    .hero__badge{
-      max-width:100%;
-    }
-
-    .hero__badgeText{
-      white-space:normal;
-    }
-
-    .hero__title{
-      font-size:42px;
-      line-height:0.98;
-      letter-spacing:-0.05em;
-    }
-
-    .hero__trust{
-      margin-top:24px;
-      padding-bottom:0;
-      flex-direction:column;
-      align-items:flex-start;
-    }
-
-    .hero__trustMeta{
-      gap:8px;
-    }
-
-    .hero__trustText{
-      white-space:normal;
-      line-height:1.25;
-    }
-
-    .hero__cta{
-      height:84px;
-      padding:0 24px;
-      font-size:16px;
+    .hero__cta {
+      height: 80px;
+      padding: 0 24px;
+      font-size: 16px;
+      margin-top: 12px;
     }
   }
-    .hero__ctaText{
-  display:block;
-  height:20px;
-  overflow:hidden;
-  position:relative;
-}
 
-.hero__ctaText span{
-  display:block;
-  transition:transform 0.35s ease;
-}
-
-.hero__ctaText span:last-child{
-  position:absolute;
-  top:100%;
-  left:0;
-}
-
-.hero__cta:hover .hero__ctaText span{
-  transform:translateY(-100%);
-}
+  .hero__ctaText{
+    display:block;
+    height:20px;
+    overflow:hidden;
+    position:relative;
+  }
+  .hero__ctaText span{
+    display:block;
+    transition:transform 0.35s ease;
+  }
+  .hero__ctaText span:last-child{
+    position:absolute;
+    top:100%;
+    left:0;
+  }
+  .hero__cta:hover .hero__ctaText span{
+    transform:translateY(-100%);
+  }
 `;

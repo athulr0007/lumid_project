@@ -23,6 +23,7 @@ const testimonials = [
     img: "https://framerusercontent.com/images/jp9F0cHBhgczl2BdRQvqWjqm4c.jpg?width=800&height=1200",
     logo: "↗ 45 Degrees°",
     counter: "1",
+    bg: "#3b5bff", /* Blue */
   },
   {
     text: "Source's AI system transformed how we assess risk. False positives dropped dramatically, and our team can now focus on real threats rather than chasing noise through the system.",
@@ -32,6 +33,7 @@ const testimonials = [
     img: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&q=80",
     logo: "✚ Clandestine",
     counter: "2",
+    bg: "#111111", /* Dark */
   },
 ];
 
@@ -49,7 +51,7 @@ const logos = [
 
 export function TestimonialsSection() {
   const [idx, setIdx] = useState(0);
-  const [out, setOut] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   const headRef = useRef(null);
   const blockRef = useRef(null);
   const logosRef = useRef(null);
@@ -59,12 +61,16 @@ export function TestimonialsSection() {
   useReveal(logosRef, 180);
 
   const go = (dir) => {
-    if (out) return;
-    setOut(true);
+    if (isAnimating) return;
+    setIsAnimating(true);
     setTimeout(() => {
       setIdx(i => (i + dir + testimonials.length) % testimonials.length);
-      setOut(false);
-    }, 260);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setIsAnimating(false);
+        });
+      });
+    }, 300);
   };
 
   const t = testimonials[idx];
@@ -95,29 +101,33 @@ export function TestimonialsSection() {
         </div>
 
         {/* ── Main block ── */}
-        <div className={`tt-block tt-fade${out ? " tt-out" : ""}`} ref={blockRef}>
+        <div className={`tt-block tt-fade`} ref={blockRef}>
 
-          {/* LEFT: blue quote panel */}
-          <div className="tt-quote">
-            <p className="tt-quote-text">"{t.text}"</p>
-            <div className="tt-author">
-              <img className="tt-avatar" src={t.avatar} alt={t.name} />
-              <div>
-                <div className="tt-author-name">{t.name}</div>
-                <div className="tt-author-role">{t.role}</div>
+          {/* LEFT: colored quote panel */}
+          <div className="tt-quote" style={{ backgroundColor: t.bg }}>
+            <div className={`tt-quote-content ${isAnimating ? "tt-slide-out" : "tt-slide-in"}`}>
+              <p className="tt-quote-text">"{t.text}"</p>
+              <div className="tt-author">
+                <img className="tt-avatar" src={t.avatar} alt={t.name} />
+                <div>
+                  <div className="tt-author-name">{t.name}</div>
+                  <div className="tt-author-role">{t.role}</div>
+                </div>
               </div>
             </div>
           </div>
 
           {/* RIGHT: image + counter + nav */}
           <div className="tt-right">
-            {/* Image */}
+            {/* Image Wrap */}
             <div className="tt-img-wrap">
-              <img src={t.img} alt="" className="tt-img" />
+              <img src={t.img} alt="" className={`tt-img ${isAnimating ? "tt-fade-out" : "tt-fade-in"}`} />
               {/* Counter top-left */}
               <div className="tt-counter">{t.counter}</div>
+              {/* Total bottom-right */}
+              <div className="tt-total">{testimonials.length}</div>
               {/* Logo centred */}
-              <div className="tt-img-logo">{t.logo}</div>
+              <div className={`tt-img-logo ${isAnimating ? "tt-fade-out" : "tt-fade-in"}`}>{t.logo}</div>
             </div>
 
             {/* Nav buttons */}
@@ -174,7 +184,6 @@ const css = `
                 transform 0.7s cubic-bezier(0.16,1,0.3,1);
   }
   .tt-vis { opacity: 1; transform: none; }
-  .tt-out { opacity: 0.4; transform: translateY(8px); }
 
   /* ── Header ──
      Reference: large title left, sub+button right, same grid pattern */
@@ -259,20 +268,35 @@ const css = `
     align-items: start;
   }
 
-  /* LEFT: blue quote panel — exact Framer spec */
+  /* LEFT: colored quote panel */
   .tt-quote {
-    background: rgb(50, 85, 255);
     color: #fff;
     padding: 90px 48px;
     display: flex;
     flex-flow: column;
     place-content: flex-start;
     align-items: flex-start;
-    gap: 64px;
     height: min-content;
     position: relative;
-    overflow: visible;
+    overflow: hidden;
     box-sizing: border-box;
+    transition: background-color 0.5s ease;
+  }
+
+  .tt-quote-content {
+    display: flex;
+    flex-flow: column;
+    gap: 64px;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .tt-slide-out {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  .tt-slide-in {
+    opacity: 1;
+    transform: translateX(0);
   }
 
   .tt-quote-text {
@@ -321,9 +345,16 @@ const css = `
   .tt-img-wrap {
     position: relative;
     overflow: hidden;
-    /* Image is taller than blue box — logos strip sits below blue box */
-height: clamp(260px, 28vw, 390px);     min-height: 150px;
+    /* Image is taller than colored box — logos strip sits below box */
+    height: clamp(260px, 28vw, 390px);
+    min-height: 150px;
+    transition: opacity 0.3s ease;
+    padding: 30px;
+    background: #dadada;
   }
+
+  .tt-fade-out { opacity: 0; }
+  .tt-fade-in  { opacity: 1; }
 
   .tt-img {
     width: 100%;
@@ -331,33 +362,46 @@ height: clamp(260px, 28vw, 390px);     min-height: 150px;
     object-fit: cover;
     object-position: center;
     display: block;
+    transition: opacity 0.3s ease;
+    clip-path: polygon(64px 0, 100% 0, 100% calc(100% - 64px), calc(100% - 64px) 100%, 0 100%, 0 64px);
   }
 
-  /* Counter — top left */
+  /* Counter — top left void */
   .tt-counter {
     position: absolute;
-    top: 14px;
-    left: 16px;
-    font-size: 16px;
-    font-weight: 700;
-    color: #0d0d0d;
-    background: #f5f2ec;
-    padding: 4px 10px;
+    top: 16px;
+    left: 20px;
+    font-size: 20px;
+    font-weight: 500;
+    color: #111111;
     z-index: 2;
-    letter-spacing: -0.02em;
+  }
+
+  /* Total — bottom right void */
+  .tt-total {
+    position: absolute;
+    bottom: 16px;
+    right: 20px;
+    font-size: 20px;
+    font-weight: 500;
+    color: #111111;
+    z-index: 2;
   }
 
   /* Logo centered on image */
   .tt-img-logo {
     position: absolute;
-    bottom: 16px;
-    right: 16px;
-    color: #fff;
-    font-size: 16px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #d5d5d5;
+    font-size: clamp(24px, 3vw, 42px);
     font-weight: 700;
     letter-spacing: -0.03em;
-    text-shadow: 0 1px 6px rgba(0,0,0,0.4);
     z-index: 2;
+    width: 100%;
+    text-align: center;
+    transition: opacity 0.3s ease;
   }
 
   /* Nav buttons */
@@ -386,8 +430,8 @@ height: clamp(260px, 28vw, 390px);     min-height: 150px;
   .tt-btn:hover { background: #1a1a1a; }
 
   .tt-btn-prev {
-    background: #f5f2ec;
-    color: #0d0d0d;
+    background: #000000;
+    color: #f8f5f5;
     border-top: 1px solid #ddd9d1;
     display: flex;
     align-items: center;

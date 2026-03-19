@@ -218,7 +218,22 @@ const css = `
     position: relative;
     overflow: hidden;
     min-width: 0;
-    background: #ddd;
+    background: #000;
+  }
+
+  .ss-media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.65) 120%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .ss-media:hover::after {
+    opacity: 1;
   }
 
   .ss-media-img {
@@ -227,6 +242,11 @@ const css = `
     display: block;
     object-fit: cover;
     object-position: center center;
+    transition: transform 0.5s ease;
+  }
+
+  .ss-media:hover .ss-media-img {
+    transform: scale(1.02);
   }
 
   .ss-logo {
@@ -254,7 +274,7 @@ const css = `
     position: absolute;
     top: 51.5%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) rotate(0deg);
     width: 66px;
     height: 66px;
     border-radius: 50%;
@@ -265,15 +285,15 @@ const css = `
     justify-content: center;
     cursor: pointer;
     z-index: 2;
-    transition: transform 0.18s ease, background 0.18s ease;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease;
     backdrop-filter: blur(3px);
     -webkit-backdrop-filter: blur(3px);
     padding-left: 4px;
   }
 
-  .ss-play:hover {
-    transform: translate(-50%, -50%) scale(1.04);
-    background: rgba(228, 197, 181, 0.82);
+  .ss-media:hover .ss-play {
+    transform: translate(-50%, -50%) scale(1.15) rotate(360deg);
+    background: rgba(228, 197, 181, 0.9);
   }
 
   .ss-dur {

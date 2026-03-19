@@ -115,31 +115,70 @@ const css = `
   }
 
   /* tablet */
-  @media (max-width: 1100px) {
-    .nl-wrap {
-      grid-template-columns: 1fr;
-      row-gap: 20px;
-      padding: 32px 40px;
-    }
-
-    .nl-form {
-      justify-content: flex-start;
-    }
+ /* ── TABLET (641px – 1100px) ── */
+@media (max-width: 1100px) {
+  .nl-wrap {
+    grid-template-columns: 1fr;
+    row-gap: 16px;
+    padding: 40px 28px;
   }
 
-  /* mobile */
-  @media (max-width: 640px) {
-    .nl-wrap {
-      padding: 24px;
-    }
-
-    .nl-form {
-      width: 100%;
-    }
-
-    .nl-input {
-      width: 100%;
-      flex: 1;
-    }
+  .nl-desc {
+    margin-left: 0;
+    justify-self: start;
+    max-width: 100%;
   }
+
+  .nl-form {
+    justify-content: flex-start;
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .nl-input {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .nl-btn {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+/* ── MOBILE (≤ 640px) ── */
+@media (max-width: 640px) {
+  .nl-wrap {
+    padding: 28px 20px;
+    row-gap: 14px;
+  }
+
+  .nl-label {
+    font-size: 20px;
+  }
+
+  .nl-desc {
+    font-size: 13px;
+    line-height: 1.55;
+  }
+
+  .nl-form {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .nl-input {
+    width: 100%;
+    height: 56px;
+    font-size: 15px;
+    box-sizing: border-box;
+  }
+
+  .nl-btn {
+    width: 100%;
+    height: 56px;
+    font-size: 15px;
+    box-sizing: border-box;
+  }
+}
 `;

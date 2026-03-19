@@ -86,7 +86,31 @@ const css = `
     transform: translate(3px, -3px);
   }
 
-  @media (max-width: 640px) {
-    .gs-banner { padding: 22px 24px; }
+  @media (min-width: 641px) and (max-width: 1024px) {
+  .gs-banner {
+    padding: 28px 32px;
+    margin-top: 0;
   }
+
+  .gs-text {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 640px) {
+  .gs-banner {
+    padding: 20px 20px;
+    margin-top: 0;
+  }
+
+  .gs-text {
+    font-size: 17px;
+    font-weight: 700;
+  }
+
+  .gs-arrow {
+    width: 20px;
+    height: 20px;
+  }
+}
 `;

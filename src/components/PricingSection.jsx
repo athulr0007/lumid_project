@@ -554,14 +554,171 @@ color: #0d0d0d;
     transform: translateY(-18px);
   }
 
-  @media (max-width: 1024px) {
-    .pr-wrap { padding: 60px 32px; }
-    .pr-grid { grid-template-columns: 1fr; }
-    .pr-plan { border-right: none; border-bottom: 1px solid #ddd9d1; }
-    .pr-plan:last-child { border-bottom: none; }
+/* ── TABLET (641px – 1024px) ── */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .pr-wrap {
+    padding: 56px 28px;
   }
-  @media (max-width: 640px) {
-    .pr-wrap { padding: 40px 24px; }
-    .pr-top { flex-direction: column; }
+
+  .pr-top {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: 24px;
+    margin-bottom: 40px;
   }
+
+  .pr-title {
+    font-size: clamp(28px, 4vw, 42px);
+    max-width: 420px;
+  }
+
+  .pr-toggle-row {
+    flex-shrink: 0;
+    align-items: center;
+    padding-top: 6px;
+  }
+
+  .pr-grid {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+
+  .pr-plan {
+    border-right: none;
+    border-bottom: none;
+    padding: 40px 32px 36px;
+  }
+
+  .pr-plan-price-row {
+    margin-bottom: 24px;
+  }
+
+  .pr-amount-inner span {
+    font-size: 48px;
+  }
+
+  .pr-dollar {
+    font-size: 48px;
+  }
+
+  .pr-amount-wrap {
+    height: 48px;
+  }
+
+  .pr-comparison {
+    margin-left: 0;
+    margin-top: 48px;
+    display: inline-flex;
+  }
+}
+
+/* ── MOBILE (≤ 640px) ── */
+@media (max-width: 640px) {
+  .pr-wrap {
+    padding: 36px 16px 48px;
+  }
+
+  .pr-top {
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 28px;
+  }
+
+  .pr-title {
+    font-size: 28px;
+    letter-spacing: -0.04em;
+    line-height: 1.08;
+    max-width: 100%;
+  }
+
+  .pr-toggle-row {
+    gap: 10px;
+  }
+
+  .pr-grid {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+
+  .pr-plan {
+    border-right: none;
+    padding: 28px 20px 28px;
+  }
+
+  .pr-plan-name {
+    font-size: 20px;
+    margin-bottom: 6px;
+  }
+
+  .pr-plan-tagline {
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+
+  .pr-plan-price-row {
+    margin-bottom: 20px;
+    align-items: baseline;
+  }
+
+  .pr-dollar {
+    font-size: 40px;
+  }
+
+  .pr-amount-wrap {
+    height: 40px;
+    padding-right: 10px; /* prevent text jump on monthly → annual */
+  }
+
+  .pr-amount-inner span {
+    font-size: 40px;
+  }
+
+  .pr-period-inline {
+    font-size: 13px;
+  }
+
+  .pr-plan-includes {
+    font-size: 11px;
+    margin-bottom: 12px;
+  }
+
+  .pr-feature {
+    font-size: 13px;
+    margin-bottom: 12px;
+    gap: 10px;
+  }
+
+  .pr-check {
+    width: 22px;
+    height: 22px;
+    font-size: 10px;
+    flex-shrink: 0;
+  }
+
+  .pr-btn {
+    padding: 16px 18px;
+    margin-top: 28px;
+    font-size: 13px;
+  }
+
+  .pr-stripe {
+    font-size: 12px;
+    margin-top: 8px;
+  }
+
+  .pr-badge {
+    top: 20px;
+    right: 20px;
+    font-size: 12px;
+    padding: 3px 8px;
+  }
+
+  .pr-comparison {
+    margin-left: 0;
+    margin-top: 36px;
+    display: inline-flex;
+  }
+}
 `;

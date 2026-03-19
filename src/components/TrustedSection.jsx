@@ -156,70 +156,97 @@ const css = `
     white-space:nowrap;
   }
 
-  @media (max-width: 1280px){
-    .trusted__inner{
-      padding:0 32px;
-    }
-
-    .trusted__header{
-      grid-template-columns:1fr;
-      gap:16px;
-      padding:34px 0 26px;
-    }
-
-    .trusted__desc{
-      width:auto;
-      justify-self:start;
-      max-width:100%;
-    }
-
-    .trusted__logos{
-      grid-template-columns:repeat(4, 1fr);
-    }
-
-    .trusted__logoItem:nth-child(4n){
-      border-right:none;
-    }
+@media (max-width: 1280px){
+  .trusted__inner{
+    padding:0 24px;
   }
 
-  @media (max-width: 768px){
-    .trusted__inner{
-      padding:0 20px;
-    }
-
-    .trusted__title{
-      font-size:24px;
-    }
-
-    .trusted__desc{
-      font-size:14px;
-      line-height:1.5;
-    }
-
-    .trusted__logos{
-      grid-template-columns:repeat(2, 1fr);
-    }
-
-    .trusted__logoItem{
-      height:74px;
-      justify-content:flex-start;
-      padding:0 12px;
-    }
-
-    .trusted__logoItem:nth-child(2n){
-      border-right:none;
-    }
-
-    .trusted__logoName{
-      font-size:14px;
-    }
-
-    .trusted__logoSym{
-      font-size:18px;
-    }
-
-    .trusted__logoSym--bold{
-      font-size:24px;
-    }
+  .trusted__header{
+    grid-template-columns:1fr;
+    gap:14px;
+    padding:28px 0 22px;
   }
+
+  .trusted__title{
+    font-size:28px;
+    border-left:none;
+  }
+
+  .trusted__desc{
+    width:100%;
+    max-width:420px;
+    justify-self:start;
+  }
+
+  /* KEY CHANGE */
+  .trusted__logos{
+    display:block;
+    overflow:hidden;
+    border-left:none;
+    border-right:none;
+  }
+
+  .trusted__track{
+    animation: trustedScroll 18s linear infinite;
+  }
+
+  .trusted__logoItem{
+    min-width:180px;
+    height:80px;
+    justify-content:flex-start;
+    padding:0 14px;
+  }
+
+  .trusted__logoName{
+    font-size:16px;
+  }
+
+  .trusted__logoSym{
+    font-size:22px;
+  }
+}
+
+
+@media (max-width: 768px){
+  .trusted__inner{
+    padding:0 16px;
+  }
+
+  .trusted__title{
+    font-size:22px;
+  }
+
+  .trusted__desc{
+    font-size:13px;
+    line-height:1.45;
+  }
+
+  /* keep continuous slider, no grid */
+  .trusted__logos{
+    display:block;
+    overflow:hidden;
+  }
+
+  .trusted__track{
+    animation: trustedScroll 14s linear infinite;
+  }
+
+  .trusted__logoItem{
+    min-width:150px;
+    height:64px;
+    padding:0 10px;
+  }
+
+  .trusted__logoName{
+    font-size:13px;
+  }
+
+  .trusted__logoSym{
+    font-size:16px;
+  }
+
+  .trusted__logoSym--bold{
+    font-size:18px;
+  }
+}
 `;

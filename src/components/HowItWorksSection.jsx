@@ -55,83 +55,102 @@ function useStackAnimation(ref) {
 
     const wrap = section.querySelector(".hw-diagonal-wrap");
     const cards = Array.from(section.querySelectorAll(".hw-card-diagonal"));
-
     if (!wrap || cards.length < 2) return;
 
-    let offsets = [];
-    const initOffsets = () => {
-      // Remove any existing transforms to get pure, accurate CSS layout differences
-      const prevTransforms = cards.map(c => c.style.transform);
-      cards.forEach(card => card.style.transform = 'none');
+    const isMobile = () => window.innerWidth <= 640;
+    const isTablet = () => window.innerWidth > 640 && window.innerWidth <= 900;
 
+    let desktopOffsets = [];
+
+    const initDesktop = () => {
+      const prev = cards.map(c => c.style.transform);
+      cards.forEach(c => (c.style.transform = "none"));
       const baseTop = cards[0].getBoundingClientRect().top;
-      offsets = cards.map((card, i) =>
-        i === 0 ? 0 : baseTop - card.getBoundingClientRect().top
+      desktopOffsets = cards.map((c, i) =>
+        i === 0 ? 0 : baseTop - c.getBoundingClientRect().top
       );
+      cards.forEach((c, i) => (c.style.transform = prev[i] || ""));
+      wrap.style.height = "";
 
-      // Restore transforms
-      cards.forEach((card, i) => card.style.transform = prevTransforms[i] || '');
+      const track = wrap.querySelector(".hw-diagonal-track");
+      const trackGap =
+        track.getBoundingClientRect().bottom -
+        cards[0].getBoundingClientRect().bottom;
+      const pb = parseFloat(window.getComputedStyle(wrap).paddingBottom) || 0;
+      section.style.marginBottom = `-${trackGap + pb - 70}px`;
+    };
 
-      // Let the original CSS 400vh handle the deep stick duration, remove inline override
-      wrap.style.height = '';
-
-      // === REMOVE THE UNWANTED BOTTOM VOID ===
-      // The physical empty void is defined purely by where Card 1 sits relative to the 100vh track's bottom.
-      // E.g., if Card 1 is anchored 390px above the bottom, all cards align there, leaving exactly 390px of void.
-      const track = wrap.querySelector('.hw-diagonal-track');
-      const trackGap = track.getBoundingClientRect().bottom - cards[0].getBoundingClientRect().bottom;
-      const paddingBottom = parseFloat(window.getComputedStyle(wrap).paddingBottom) || 0;
-      const targetGap = 70;
-
-      // Apply negative margin to the OUTermost section so it perfectly pulls the next React 
-      // component on the page up to cover the empty track space. Also prevent this on mobile.
-      if (window.innerWidth > 900) {
-        section.style.marginBottom = `-${trackGap + paddingBottom - targetGap}px`;
-        wrap.style.marginBottom = '0px';
+    const init = () => {
+      if (isMobile() || isTablet()) {
+        section.style.marginBottom = "0px";
+        desktopOffsets = [];
       } else {
-        section.style.marginBottom = '0px';
-        wrap.style.marginBottom = '0px';
+        initDesktop();
       }
     };
-    initOffsets();
 
     const handleScroll = () => {
       const rect = wrap.getBoundingClientRect();
       const vh = window.innerHeight;
-
       const total = wrap.offsetHeight - vh;
       if (total <= 0) return;
 
       const scrolled = Math.min(Math.max(-rect.top, 0), total);
-      const progress = scrolled / total;
+      const progress = scrolled / total; // 0 → 1
 
-      // The maximum distance any card needs to travel
-      const maxOffset = Math.max(...offsets.map(Math.abs));
+      if (isMobile()) {
+        // card 1 sits at top, each subsequent card travels up to overlap card 1
+        // card height = 25svh each
+        const cardH = cards[0].offsetHeight;
 
-      // Scrub the short physical travel distance over the entire massive 400vh track
-      // Because it finishes exactly at progress = 1.0, there is zero unwanted bottom.
-      const simulatedScroll = progress * maxOffset;
+        // card2 moves during progress 0→0.33
+        // card3 moves during progress 0.33→0.66
+        // card4 moves during progress 0.66→1
+        [1, 2, 3].forEach((i) => {
+          const segStart = (i - 1) / 3;
+          const segEnd = i / 3;
+          const p = Math.min(
+            Math.max((progress - segStart) / (segEnd - segStart), 0),
+            1
+          );
+          // Each card travels up by i * cardH to land on card 1
+          const totalTravel = i * cardH;
+          cards[i].style.transform = `translateY(-${p * totalTravel}px)`;
+        });
 
-      cards.forEach((card, i) => {
-        if (i === 0) return;
+      } else if (isTablet()) {
+        // card2 + card3 move together in phase 1 (0→0.6)
+        // card4 moves in phase 2 (0.4→1)
+        const p1 = Math.min(Math.max(progress / 0.6, 0), 1);
+        const p2 = Math.min(Math.max((progress - 0.4) / 0.6, 0), 1);
 
-        const cardMaxTravel = Math.abs(offsets[i]);
+        cards[1].style.transform = `translateY(-${p1 * 100}%)`;
+        cards[2].style.transform = `translateY(-${p1 * 100}%)`;
+        cards[3].style.transform = `translateY(-${p2 * 100}%)`;
 
-        // As you scroll, they scrub smoothly and cap exactly when they align
-        let travel = Math.min(simulatedScroll, cardMaxTravel);
-
-        card.style.transform = `translateY(-${travel}px)`;
-      });
+      } else {
+        // Desktop original diagonal
+        if (!desktopOffsets.length) return;
+        const maxOffset = Math.max(...desktopOffsets.map(Math.abs));
+        const simulatedScroll = progress * maxOffset;
+        cards.forEach((card, i) => {
+          if (i === 0) return;
+          const travel = Math.min(simulatedScroll, Math.abs(desktopOffsets[i]));
+          card.style.transform = `translateY(-${travel}px)`;
+        });
+      }
     };
 
     const onResize = () => {
-      initOffsets();
+      // reset all transforms on resize before reinit
+      cards.forEach(c => (c.style.transform = ""));
+      init();
       handleScroll();
     };
 
-    window.addEventListener("scroll", handleScroll);
+    init();
+    window.addEventListener("scroll", handleScroll, { passive: true });
     window.addEventListener("resize", onResize);
-
     handleScroll();
 
     return () => {
@@ -334,13 +353,181 @@ const css = `
     letter-spacing: -0.01em;
   }
 
-  @media (max-width:900px){
-    .hw-diagonal-wrap{height:auto;}
-    .hw-diagonal-track{position:static;height:auto;display:grid;grid-template-columns:1fr 1fr;}
-    .hw-card-diagonal{position:relative;width:100%;height:320px;transform:none !important;}
+ /* ── TABLET (641px – 900px) ── */
+@media (min-width: 641px) and (max-width: 900px) {
+  .hw-diagonal-wrap {
+    padding: 0 20px 0;
+    height: 400vh;
   }
 
-  @media (max-width:640px){
-    .hw-diagonal-track{grid-template-columns:1fr;}
+  .hw-diagonal-track {
+    position: sticky;
+    top: 64px;
+    height: calc(100vh - 64px);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 0;
   }
+
+  /* Card 1: top-left, static anchor */
+  .hw-card-pos-1 {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    bottom: auto; right: auto;
+    grid-column: 1;
+    grid-row: 1;
+    transform: none !important;
+    z-index: 1;
+  }
+
+  /* Card 2: top-right, slides DOWN over card 1 from above */
+  .hw-card-pos-2 {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    bottom: auto; right: auto;
+    grid-column: 2;
+    grid-row: 1;
+    z-index: 2;
+    /* js translateY drives this on scroll */
+  }
+
+  /* Card 3: bottom-left, slides UP over card 1 from below */
+  .hw-card-pos-3 {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    bottom: auto; right: auto;
+    grid-column: 1;
+    grid-row: 2;
+    z-index: 3;
+  }
+
+  /* Card 4: bottom-right, slides UP over card 2 from below */
+  .hw-card-pos-4 {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    bottom: auto; right: auto;
+    grid-column: 2;
+    grid-row: 2;
+    z-index: 4;
+  }
+
+  .hw-card-diagonal {
+    will-change: transform;
+  }
+
+  .hw-header {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 40px 20px 32px;
+  }
+
+  .hw-title {
+    font-size: clamp(32px, 5vw, 48px);
+  }
+
+  .hw-desc {
+    padding-top: 0;
+    font-size: 14px;
+  }
+}
+
+/* ── MOBILE (≤ 640px) ── */
+@media (max-width: 640px) {
+  .hw-diagonal-wrap {
+    padding: 0;
+    height: 400vh;
+     overflow: visible;
+  }
+ .hw-diagonal-wrap {
+    padding: 0 !important;
+    height: 400vh !important; /* MUST stay 400vh for scroll space */
+    margin-bottom: 0 !important;
+  }
+  .hw-diagonal-track {
+    position: sticky !important;
+    top: 0 !important;
+    height: 100svh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+  }
+
+  /* All cards: full width, stacked absolutely so JS can layer them */
+   .hw-card-diagonal {
+    position: relative !important;
+    width: 100% !important;
+    height: 25svh !important;
+    bottom: auto !important;
+    right: auto !important;
+    left: auto !important;
+    top: auto !important;
+    flex-shrink: 0 !important;
+    will-change: transform;
+    transform: none; /* reset — JS takes over */
+  }
+
+  /* card 1: base layer, never moves */
+  .hw-card-pos-1 {
+    z-index: 1;
+    transform: none !important;
+  }
+
+  /* card 2 starts below, scrolls up over card 1 */
+  .hw-card-pos-2 {
+    z-index: 2;
+    transform: translateY(100%) !important; /* overridden by JS */
+  }
+
+  /* card 3 starts below card 2 */
+  .hw-card-pos-3 {
+    z-index: 3;
+    transform: translateY(200%) !important;
+  }
+
+  /* card 4 starts below card 3 */
+  .hw-card-pos-4 {
+    z-index: 4;
+    transform: translateY(300%) !important;
+  }
+
+  .hw-header {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 28px 16px 24px;
+  }
+
+  .hw-title {
+    font-size: 28px;
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+  }
+
+  .hw-desc {
+    padding-top: 0;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .hw-step-num {
+    font-size: 28px;
+  }
+
+  .hw-step-name {
+    font-size: 18px;
+  }
+
+  .hw-step-text {
+    font-size: 13.5px;
+  }
+
+  .hw-bg-num {
+    font-size: 120px;
+    opacity: 0.07;
+  }
+}
 `;

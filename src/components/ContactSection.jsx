@@ -208,15 +208,126 @@ const css = `
 
 
 
-  @media (max-width: 1100px) {
-    .ct-wrap { padding: 56px 32px; }
-    .ct-head { flex-direction: column; gap: 16px; }
+ /* ── TABLET (641px – 1100px) ── */
+@media (min-width: 641px) and (max-width: 1100px) {
+  .ct-wrap {
+    padding: 56px 28px;
   }
-  @media (max-width: 640px) {
-    .ct-wrap { padding: 40px 24px; }
-    .ct-form { grid-template-columns: 1fr; }
-    .ct-full, .ct-footer { grid-column: span 1; }
-    .ct-footer { flex-direction: column; }
-    .ct-submit { width: 100%; justify-content: space-between; }
+
+  .ct-head {
+    flex-direction: column;
+    gap: 16px;
+    margin-bottom: 36px;
   }
+
+  .ct-title {
+    font-size: clamp(36px, 5vw, 52px);
+  }
+
+  .ct-desc {
+    max-width: 100%;
+    font-size: 14px;
+  }
+
+  /* Single column, all fields full width */
+  .ct-form {
+    grid-template-columns: 1fr;
+  }
+
+  .ct-full {
+    grid-column: span 1;
+  }
+
+  /* Footer: submit full width on top, checkbox below */
+  .ct-footer {
+    grid-column: span 1;
+    flex-direction: column;
+    align-items: stretch;
+    border: none;
+    margin-top: 0;
+    padding: 0;
+  }
+
+  .ct-submit {
+    width: 100%;
+    height: 60px;
+    font-size: 16px;
+    border: none;
+    justify-content: space-between;
+    order: 1;
+  }
+
+  .ct-agree {
+    order: 2;
+    border: 1px solid #a0a0a0;
+    margin-top: -1px;
+    font-size: 12px;
+  }
+}
+
+/* ── MOBILE (≤ 640px) ── */
+@media (max-width: 640px) {
+  .ct-wrap {
+    padding: 36px 16px;
+  }
+
+  .ct-head {
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .ct-title {
+    font-size: 32px;
+    letter-spacing: -0.03em;
+  }
+
+  .ct-desc {
+    font-size: 13.5px;
+    max-width: 100%;
+  }
+
+  .ct-form {
+    grid-template-columns: 1fr;
+  }
+
+  .ct-full {
+    grid-column: span 1;
+  }
+
+  .ct-field {
+    padding: 18px 16px;
+    font-size: 14px;
+  }
+
+  .ct-area {
+    min-height: 120px;
+  }
+
+  /* Footer: submit full width on top, checkbox below */
+  .ct-footer {
+    grid-column: span 1;
+    flex-direction: column;
+    align-items: stretch;
+    border: none;
+    margin-top: 0;
+    padding: 0;
+  }
+
+  .ct-submit {
+    width: 100%;
+    height: 56px;
+    font-size: 16px;
+    order: 1;
+    justify-content: space-between;
+  }
+
+  .ct-agree {
+    order: 2;
+    border: 1px solid #a0a0a0;
+    margin-top: -1px;
+    padding: 16px;
+    font-size: 11.5px;
+  }
+}
 `;

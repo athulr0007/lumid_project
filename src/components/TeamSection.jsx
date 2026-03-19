@@ -1,19 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { team } from "../data";
 
 export default function TeamSection() {
-  const perPage = 4;
+  const [perPage, setPerPage] = useState(4);
   const [page, setPage] = useState(0);
+
+  useEffect(() => {
+    const update = () => {
+      const w = window.innerWidth;
+      const pp = w <= 640 ? 1 : w <= 1024 ? 3 : 4;
+      setPerPage(pp);
+      setPage(0); // reset page on resize
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
 
   const totalPages = Math.ceil(team.length / perPage);
 
-  const next = () => {
-    if (page < totalPages - 1) setPage(page + 1);
-  };
-
-  const prev = () => {
-    if (page > 0) setPage(page - 1);
-  };
+  const next = () => { if (page < totalPages - 1) setPage(page + 1); };
+  const prev = () => { if (page > 0) setPage(page - 1); };
 
   return (
     <>
@@ -96,17 +103,9 @@ export default function TeamSection() {
           transition: transform 0.3s ease;
         }
 
-        .team-card:hover .dept-dot {
-          width: 34px;
-        }
-
-        .team-card:hover .team-dept {
-          gap: 12px;
-        }
-
-        .team-card:hover .dept-text {
-          transform: translateX(4px);
-        }
+        .team-card:hover .dept-dot { width: 34px; }
+        .team-card:hover .team-dept { gap: 12px; }
+        .team-card:hover .dept-text { transform: translateX(4px); }
 
         .team-img-wrap {
           height: 580px;
@@ -120,9 +119,7 @@ export default function TeamSection() {
           transition: transform 0.6s ease;
         }
 
-        .team-card:hover .team-img {
-          transform: scale(1.08);
-        }
+        .team-card:hover .team-img { transform: scale(1.08); }
 
         .team-info {
           background: #ecece3;
@@ -134,9 +131,7 @@ export default function TeamSection() {
           font-size: 23px;
         }
 
-        .verify {
-          color: #22c55e;
-        }
+        .verify { color: #22c55e; }
 
         .team-role {
           font-size: 16px;
@@ -151,10 +146,7 @@ export default function TeamSection() {
           border-top: 1px solid #dcdcdc;
         }
 
-        .team-bars {
-          display: flex;
-          gap: 4px;
-        }
+        .team-bars { display: flex; gap: 4px; }
 
         .bar {
           width: 7px;
@@ -165,10 +157,7 @@ export default function TeamSection() {
         .bar.dark { background: #111; }
         .bar.light { background: #ccc; }
 
-        .team-location {
-          font-size: 12px;
-          color: #777;
-        }
+        .team-location { font-size: 12px; color: #777; }
 
         .team-controls {
           display: flex;
@@ -176,10 +165,7 @@ export default function TeamSection() {
           margin-top: 40px;
         }
 
-        .team-nav {
-          display: flex;
-          gap: 12px;
-        }
+        .team-nav { display: flex; gap: 12px; }
 
         .team-btn {
           width: 48px;
@@ -190,20 +176,13 @@ export default function TeamSection() {
           transition: transform 0.2s ease, opacity 0.2s ease;
         }
 
-        .team-btn.right {
-          background: #22c55e;
-        }
-
-        .team-btn:hover {
-          transform: scale(0.9);
-        }
+        .team-btn.right { background: #22c55e; }
+        .team-btn:hover { transform: scale(0.9); }
 
         .team-btn.disabled {
           opacity: 0.4;
           pointer-events: none;
         }
-
-        /* FIXED ROLLING BUTTON */
 
         .see-experts {
           margin-left: auto;
@@ -213,7 +192,7 @@ export default function TeamSection() {
           background: #111;
           color: #fff;
           cursor: pointer;
-          
+          border: none;
         }
 
         .roll {
@@ -230,10 +209,121 @@ export default function TeamSection() {
           padding-right: 270px;
         }
 
-        .see-experts:hover .roll {
-          transform: translateY(-56px);
+        .see-experts:hover .roll { transform: translateY(-56px); }
+
+        /* ── TABLET (641px – 1024px) ── */
+        @media (min-width: 641px) and (max-width: 1024px) {
+          .team {
+            padding: 48px 28px;
+          }
+
+          .team-header {
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 28px;
+          }
+
+          .team-title {
+            font-size: 38px;
+            white-space: normal;
+          }
+
+          .team-desc {
+            max-width: 100%;
+            font-size: 14px;
+          }
+
+          .team-page {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+          }
+
+          .team-img-wrap { height: 280px; }
+          .team-name { font-size: 16px; }
+          .team-role { font-size: 13px; }
+
+          .team-controls {
+            margin-top: 24px;
+            align-items: center;
+          }
+
+          .team-btn {
+            width: 40px;
+            height: 40px;
+          }
+
+          .see-experts {
+            width: auto;
+            height: 40px;
+            padding: 0;
+          }
+
+          .see-experts .roll span {
+            height: 40px;
+            padding: 0 24px;
+            white-space: nowrap;
+          }
+
+          .see-experts:hover .roll { transform: translateY(-40px); }
         }
 
+        /* ── MOBILE (≤ 640px) ── */
+        @media (max-width: 640px) {
+          .team {
+            padding: 36px 16px 0;
+          }
+
+          .team-header {
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+          }
+
+          .team-title {
+            font-size: 32px;
+            white-space: normal;
+            line-height: 1.05;
+            letter-spacing: -0.03em;
+          }
+
+          .team-desc {
+            max-width: 100%;
+            font-size: 14px;
+            line-height: 1.5;
+          }
+
+          .team-page {
+            grid-template-columns: 1fr;
+            gap: 0;
+          }
+
+          .team-img-wrap { height: 320px; }
+          .team-track { margin-top: 20px; }
+          .team-name { font-size: 20px; }
+          .team-role { font-size: 14px; }
+
+          /* Nav: two full-width equal buttons side by side */
+          .team-controls {
+            margin-top: 0;
+            flex-direction: row;
+            gap: 0;
+          }
+
+          .team-nav {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            width: 100%;
+          }
+
+          .team-btn {
+            width: 100%;
+            height: 56px;
+            font-size: 20px;
+          }
+
+          .see-experts { display: none; }
+        }
       `}</style>
 
       <section className="team">
@@ -260,7 +350,6 @@ export default function TeamSection() {
               >
                 {team.slice(p * perPage, p * perPage + perPage).map((m, i) => (
                   <div key={i} className="team-card">
-
                     <div className="team-top">
                       <div className="team-dept">
                         <span
@@ -281,7 +370,6 @@ export default function TeamSection() {
                         {m.name} <span className="verify">✓</span>
                       </div>
                       <div className="team-role">{m.role}</div>
-
                       <div className="team-bottom-row">
                         <div className="team-bars">
                           {m.bars.map((b, j) => (
@@ -291,7 +379,6 @@ export default function TeamSection() {
                         <div className="team-location">{m.location}</div>
                       </div>
                     </div>
-
                   </div>
                 ))}
               </div>
@@ -307,7 +394,6 @@ export default function TeamSection() {
             >
               ←
             </button>
-
             <button
               className={`team-btn right ${page === totalPages - 1 ? "disabled" : ""}`}
               onClick={next}

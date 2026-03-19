@@ -400,29 +400,114 @@ const css = `
   .sv-img-logo sup { font-size: 6px; vertical-align: super; }
 
   /* ── Responsive ── */
-  @media (max-width: 1200px) {
-    .sv-header { grid-template-columns: 1fr 320px; gap: 40px; padding: 48px 40px; }
-    .sv-list   { padding: 0 40px; }
-    .sv-row    { grid-template-columns: 1fr 360px; }
-    .sv-title  { font-size: clamp(32px, 3.5vw, 48px); }
-    .sv-name   { font-size: clamp(26px, 2.5vw, 38px); }
+ @media (max-width: 1024px) {
+  .sv-header {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 36px 20px 28px;
   }
 
-  @media (max-width: 1024px) {
-    .sv-header { grid-template-columns: 1fr; gap: 14px; padding: 40px 32px; }
-    .sv-list   { padding: 0 32px; }
-    .sv-row    { grid-template-columns: 1fr; min-height: unset; }
-    .sv-left   { padding: 28px 0 24px; }
-    .sv-right  { padding: 0 0 28px; }
-    .sv-img-wrap { min-height: 220px; }
-    .sv-footer { flex-wrap: wrap; }
+  .sv-list {
+    padding: 0 20px;
   }
 
-  @media (max-width: 640px) {
-    .sv-header { padding: 32px 20px; }
-    .sv-list   { padding: 0 20px; }
-    .sv-title  { font-size: 30px; }
-    .sv-name   { font-size: 26px; }
-    .sv-img-wrap { min-height: 180px; }
+  .sv-row {
+    grid-template-columns: 1fr;
+    margin-bottom: 12px;
   }
+
+  .sv-right {
+    order: 1;
+    padding: 0;
+  }
+
+  .sv-left {
+    order: 2;
+    padding: 18px 0 24px;
+  }
+
+  .sv-img-wrap {
+    min-height: 240px;
+  }
+
+  /* Number badge sits flush top-left ON the image */
+  .sv-img-corner {
+    top: 0;
+    left: 0;
+    padding: 6px 10px;
+  }
+
+  .sv-name {
+    font-size: 26px;
+    margin-bottom: 10px;
+  }
+
+  .sv-desc {
+    font-size: 13.5px;
+    line-height: 1.5;
+  }
+
+  .sv-footer {
+    margin-top: 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .sv-tags {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+}
+
+@media (max-width: 640px) {
+  .sv-header {
+    padding: 28px 16px 22px;
+  }
+
+  .sv-title {
+    font-size: 28px;
+    line-height: 1.05;
+  }
+
+  .sv-subtitle {
+    font-size: 13px;
+  }
+
+  .sv-list {
+    padding: 0 16px;
+  }
+
+  .sv-row {
+    margin-bottom: 10px;
+  }
+
+  .sv-img-wrap {
+    min-height: 200px;
+  }
+
+  .sv-left {
+    padding: 16px 0 20px;
+  }
+
+  .sv-name {
+    font-size: 24px;
+    margin-bottom: 8px;
+  }
+
+  .sv-desc {
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  .sv-tag {
+    height: 22px;
+    font-size: 10.5px;
+    padding: 0 8px;
+  }
+
+  .sv-learn {
+    font-size: 15px;
+  }
+}
 `;

@@ -405,10 +405,130 @@ const css = `
   font-weight: 410;
 }
 
-@media (max-width: 1100px) {
+/* ── TABLET (641px – 1100px) ── */
+@media (min-width: 641px) and (max-width: 1100px) {
   .fq-wrap {
     grid-template-columns: 1fr;
     gap: 40px;
+    padding: 56px 28px;
+  }
+
+  /* FAQ right col appears first */
+  .fq-right {
+    order: 1;
+  }
+
+  .fq-left {
+    order: 2;
+  }
+
+  .fq-title {
+    font-size: 44px;
+    margin-bottom: 32px;
+  }
+
+  .fq-faces {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .fq-face img {
+    height: 280px;
+  }
+
+  .fq-q {
+    font-size: 17px;
+  }
+
+  .fq-contact-btn {
+    width: 100%;
+  }
+}
+
+/* ── MOBILE (≤ 640px) ── */
+@media (max-width: 640px) {
+  .fq-wrap {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding: 36px 16px;
+  }
+
+  /* FAQ right col appears first */
+  .fq-right {
+    order: 1;
+  }
+
+  .fq-left {
+    order: 2;
+  }
+
+  .fq-title {
+    font-size: 28px;
+    line-height: 1.1;
+    margin-bottom: 20px;
+    letter-spacing: -0.03em;
+  }
+
+  .fq-item {
+    padding: 0 16px;
+    margin-bottom: 2px;
+  }
+
+  .fq-q {
+    font-size: 15px;
+    padding: 16px 0;
+    gap: 12px;
+  }
+
+  .fq-text {
+    margin-left: 12px;
+  }
+
+  .fq-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+
+  .fq-answer {
+    margin-left: 28px;
+  }
+
+  .fq-answer-inner {
+    font-size: 14px;
+    padding-bottom: 16px;
+  }
+
+  .fq-faces {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .fq-face img {
+    height: 200px;
+  }
+
+  .fq-face-name {
+    font-size: 14px;
+    margin-top: 10px;
+  }
+
+  .fq-face-role {
+    font-size: 12px;
+  }
+
+  .fq-face-dot {
+    width: 10px;
+    height: 10px;
+  }
+
+  .fq-note {
+    font-size: 15px;
+    margin-bottom: 14px;
+  }
+
+  .fq-contact-btn {
+    width: 100%;
   }
 }
 `;

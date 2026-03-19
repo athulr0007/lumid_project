@@ -330,57 +330,76 @@ const css = `
     }
   }
 
-  @media (max-width: 900px) {
-    .ss-wrap {
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: 170px 170px 280px;
-      width: 100%;
-      margin-left: 0;
-      margin-right: 0;
-      border-left: none;
-      border-right: none;
-    }
-
-    .ss-cell--1 {
-      grid-column: 1;
-      grid-row: 1;
-      border-right: 1px solid #d7d3ca;
-      border-bottom: 1px solid #d7d3ca;
-    }
-
-    .ss-cell--2 {
-      grid-column: 2;
-      grid-row: 1;
-      border-right: none;
-      border-bottom: 1px solid #d7d3ca;
-    }
-
-    .ss-cell--3 {
-      grid-column: 1;
-      grid-row: 2;
-      border-right: 1px solid #d7d3ca;
-      border-bottom: 1px solid #d7d3ca;
-    }
-
-    .ss-cell--4 {
-      grid-column: 2;
-      grid-row: 2;
-      border-right: none;
-      border-bottom: 1px solid #d7d3ca;
-    }
-
-    .ss-media {
-      grid-column: 1 / 3;
-      grid-row: 3;
-      min-height: 280px;
-    }
-
-    .ss-num {
-      font-size: 48px;
-    }
-
-    .ss-label {
-      font-size: 13px;
-    }
+ @media (max-width: 900px) {
+  .ss-wrap {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 150px 150px auto;
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    border-left: none;
+    border-right: none;
   }
+
+  .ss-cell {
+    padding: 18px 16px 16px 16px;
+  }
+
+  .ss-cell--1 {
+    grid-column: 1;
+    grid-row: 1;
+    border-right: 1px solid #d7d3ca;
+    border-bottom: 1px solid #d7d3ca;
+  }
+
+  .ss-cell--2 {
+    grid-column: 2;
+    grid-row: 1;
+    border-right: none;
+    border-bottom: 1px solid #d7d3ca;
+  }
+
+  .ss-cell--3 {
+    grid-column: 1;
+    grid-row: 2;
+    border-right: 1px solid #d7d3ca;
+    border-bottom: 1px solid #d7d3ca;
+  }
+
+  .ss-cell--4 {
+    grid-column: 2;
+    grid-row: 2;
+    border-right: none;
+    border-bottom: 1px solid #d7d3ca;
+  }
+
+  /* KEY FIX: image height + dominance */
+  .ss-media {
+    grid-column: 1 / 3;
+    grid-row: 3;
+    height: 260px;
+  }
+
+  .ss-media-img {
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* typography scale down */
+  .ss-num {
+    font-size: 38px;
+    letter-spacing: -0.06em;
+  }
+
+  .ss-label {
+    font-size: 12.5px;
+    line-height: 1.25;
+  }
+
+  /* play button adjust */
+  .ss-play {
+    width: 52px;
+    height: 52px;
+  }
+}
 `;

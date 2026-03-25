@@ -31,23 +31,17 @@ function useReveal(ref) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-
     const obs = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          el.classList.add("hw-vis");
-          obs.disconnect();
-        }
+        if (entry.isIntersecting) { el.classList.add("hw-vis"); obs.disconnect(); }
       },
       { threshold: 0.08 }
     );
-
     obs.observe(el);
     return () => obs.disconnect();
   }, []);
 }
 
-/* ===== FIXED STACK ANIMATION ===== */
 function useStackAnimation(ref) {
   useEffect(() => {
     const section = ref.current;
@@ -80,8 +74,17 @@ function useStackAnimation(ref) {
       section.style.marginBottom = `-${trackGap + pb - 70}px`;
     };
 
+    const initMobile = () => {
+      // marginBottom is driven dynamically in handleScroll during phase 3
+      // (when card 4 is moving). Reset to 0 on init/resize.
+      section.style.marginBottom = "0px";
+    };
+
     const init = () => {
-      if (isMobile() || isTablet()) {
+      if (isMobile()) {
+        desktopOffsets = [];
+        initMobile();
+      } else if (isTablet()) {
         section.style.marginBottom = "0px";
         desktopOffsets = [];
       } else {
@@ -89,47 +92,84 @@ function useStackAnimation(ref) {
       }
     };
 
+    // ease-in-out cubic
+    const ease = (t) =>
+      t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
     const handleScroll = () => {
-      const rect = wrap.getBoundingClientRect();
-      const vh = window.innerHeight;
-      const total = wrap.offsetHeight - vh;
-      if (total <= 0) return;
-
-      const scrolled = Math.min(Math.max(-rect.top, 0), total);
-      const progress = scrolled / total; // 0 → 1
-
       if (isMobile()) {
-        // card 1 sits at top, each subsequent card travels up to overlap card 1
-        // card height = 25svh each
+        // ── MOBILE STACKING ──
+        // Cards start: 01 top, 02 below 01, 03 below 02, 04 below 03 (each 25svh).
+        // Each card travels UP exactly 1 × cardH — filling the slot of the card above it.
+        //
+        // Phase 0→1/3 : card 2 slides up 1×cardH  → sits on card 1's slot
+        // Phase 1/3→2/3 : card 3 slides up 1×cardH  → sits on card 2's old slot
+        //                  (which visually = card 1's slot because card 2 is already there)
+        // Phase 2/3→1  : card 4 slides up 1×cardH  → same
+        //
+        // Cards hold their final translateY once their phase is done.
+        // progress = 1 → all stacked, wrap exits sticky, scroll resumes.
+
+        const rect = wrap.getBoundingClientRect();
+        const wrapScrolled = -rect.top;
+        const animTotal = wrap.offsetHeight - window.innerHeight;
+
+        if (wrapScrolled <= 0 || animTotal <= 0) {
+          cards.forEach((c, i) => { if (i > 0) c.style.transform = "translateY(0px)"; });
+          return;
+        }
+
+        const progress = Math.min(wrapScrolled / animTotal, 1);
         const cardH = cards[0].offsetHeight;
 
-        // card2 moves during progress 0→0.33
-        // card3 moves during progress 0.33→0.66
-        // card4 moves during progress 0.66→1
-        [1, 2, 3].forEach((i) => {
-          const segStart = (i - 1) / 3;
-          const segEnd = i / 3;
-          const p = Math.min(
-            Math.max((progress - segStart) / (segEnd - segStart), 0),
-            1
-          );
-          // Each card travels up by i * cardH to land on card 1
-          const totalTravel = i * cardH;
-          cards[i].style.transform = `translateY(-${p * totalTravel}px)`;
-        });
+        // All active cards move together each phase by 1×slot upward.
+        // Each card stops when it has accumulated enough travel to reach card 1.
+        //
+        // Phase 1 (0→1/3):   cards 2,3,4 all move 1×slot. Card 2 arrives at card 1 → done.
+        // Phase 2 (1/3→2/3): cards 3,4 move another 1×slot. Card 3 arrives → done.
+        // Phase 3 (2/3→1):   card 4 moves final 1×slot. Arrives → done.
+        //
+        // card 2 total = 1×slot  (only phase 1)
+        // card 3 total = 2×slot  (phase 1 + phase 2)
+        // card 4 total = 3×slot  (phase 1 + phase 2 + phase 3)
+        const gap = 8;
+        const slot = cardH + gap;
+        const e1 = ease(Math.min(Math.max((progress - 0)   / (1/3), 0), 1));
+        const e2 = ease(Math.min(Math.max((progress - 1/3) / (1/3), 0), 1));
+        const e3 = ease(Math.min(Math.max((progress - 2/3) / (1/3), 0), 1));
+
+        cards[1].style.transform = `translateY(-${slot * e1}px)`;
+        cards[2].style.transform = `translateY(-${slot * (e1 + e2)}px)`;
+        cards[3].style.transform = `translateY(-${slot * (e1 + e2 + e3)}px)`;
+
+        // Pull next component up as card 4 moves (phase 3 only).
+        // e3 goes 0→1 during phase 3, so marginBottom goes 0 → -(slot*3).
+        // This means the next section starts moving exactly when card 4 starts.
+        section.style.marginBottom = `-${slot * 3 * e3}px`;
 
       } else if (isTablet()) {
-        // card2 + card3 move together in phase 1 (0→0.6)
-        // card4 moves in phase 2 (0.4→1)
+        const rect = wrap.getBoundingClientRect();
+        const vh = window.innerHeight;
+        const total = wrap.offsetHeight - vh;
+        if (total <= 0) return;
+        const scrolled = Math.min(Math.max(-rect.top, 0), total);
+        const progress = scrolled / total;
+
         const p1 = Math.min(Math.max(progress / 0.6, 0), 1);
         const p2 = Math.min(Math.max((progress - 0.4) / 0.6, 0), 1);
-
         cards[1].style.transform = `translateY(-${p1 * 100}%)`;
         cards[2].style.transform = `translateY(-${p1 * 100}%)`;
         cards[3].style.transform = `translateY(-${p2 * 100}%)`;
 
       } else {
-        // Desktop original diagonal
+        // ── DESKTOP (unchanged) ──
+        const rect = wrap.getBoundingClientRect();
+        const vh = window.innerHeight;
+        const total = wrap.offsetHeight - vh;
+        if (total <= 0) return;
+        const scrolled = Math.min(Math.max(-rect.top, 0), total);
+        const progress = scrolled / total;
+
         if (!desktopOffsets.length) return;
         const maxOffset = Math.max(...desktopOffsets.map(Math.abs));
         const simulatedScroll = progress * maxOffset;
@@ -142,7 +182,6 @@ function useStackAnimation(ref) {
     };
 
     const onResize = () => {
-      // reset all transforms on resize before reinit
       cards.forEach(c => (c.style.transform = ""));
       init();
       handleScroll();
@@ -170,12 +209,10 @@ function DiagonalCards() {
             className={`hw-card hw-card-${s.bg} hw-card-diagonal hw-card-pos-${i + 1}`}
           >
             <span className="hw-bg-num">{s.num}</span>
-
             <div className="hw-card-top">
               <p className="hw-step-num">{s.num}</p>
               <h3 className="hw-step-name">{s.name}</h3>
             </div>
-
             <p className="hw-step-text">{s.text}</p>
           </div>
         ))}
@@ -194,7 +231,6 @@ export default function HowItWorksSection() {
   return (
     <>
       <style>{css}</style>
-
       <section ref={sectionRef} className="hw-wrap">
         <div ref={headRef} className="hw-fade hw-header">
           <div>
@@ -202,7 +238,6 @@ export default function HowItWorksSection() {
               How we turn ideas into intelligent systems.
             </h2>
           </div>
-
           <div>
             <p className="hw-desc">
               Source<sup>®</sup> guides you through a focused, four-step process
@@ -211,7 +246,6 @@ export default function HowItWorksSection() {
             </p>
           </div>
         </div>
-
         <DiagonalCards />
       </section>
     </>
@@ -225,17 +259,16 @@ const css = `
     overflow: visible;
   }
 
-  /* ===== CORRECT PIN AREA ===== */
   .hw-diagonal-wrap {
     padding: 0 54px 100px;
     box-sizing: border-box;
     position: relative;
-    height: 400vh; /* scroll space */
+    height: 400vh;
   }
 
   .hw-diagonal-track {
     position: sticky;
-    top: 96px; /* 64px navbar + 32px gap */
+    top: 96px;
     height: 100vh;
   }
 
@@ -280,11 +313,6 @@ const css = `
     letter-spacing: -0.015em;
   }
 
-  .hw-diagonal-track {
-    width: 100%;
-   
-  }
-
   .hw-card {
     position: relative;
     padding: 42px 36px 36px;
@@ -301,15 +329,15 @@ const css = `
     will-change: transform;
   }
 
-  .hw-card-pos-4 { right: 0; bottom: -810px; }
+  .hw-card-pos-4 { right: 0;   bottom: -810px; }
   .hw-card-pos-3 { right: 25%; bottom: -410px; }
-  .hw-card-pos-2 { right: 50%; bottom: -10px; }
-  .hw-card-pos-1 { right: 75%; bottom: 390px; }
+  .hw-card-pos-2 { right: 50%; bottom: -10px;  }
+  .hw-card-pos-1 { right: 75%; bottom: 390px;  }
 
-  .hw-card-default { background: #e4e4e4ff; color:#111111; }
-  .hw-card-green { background: #00e547; color:#111111; }
-  .hw-card-blue { background: #3b5bff; color:#ffffff; }
-  .hw-card-dark { background: #111111; color:#ffffff; }
+  .hw-card-default { background: #e4e4e4ff; color: #111111; }
+  .hw-card-green   { background: #00e547;   color: #111111; }
+  .hw-card-blue    { background: #3b5bff;   color: #ffffff; }
+  .hw-card-dark    { background: #111111;   color: #ffffff; }
 
   .hw-bg-num {
     position: absolute;
@@ -329,7 +357,7 @@ const css = `
     gap: 8px;
   }
 
-  .hw-step-num { 
+  .hw-step-num {
     margin: 0;
     font-size: clamp(32px, 3vw, 42px);
     font-weight: 500;
@@ -337,7 +365,7 @@ const css = `
     letter-spacing: -0.04em;
   }
 
-  .hw-step-name { 
+  .hw-step-name {
     margin: 0;
     font-size: clamp(20px, 2vw, 24px);
     font-weight: 500;
@@ -345,7 +373,7 @@ const css = `
     letter-spacing: -0.02em;
   }
 
-  .hw-step-text { 
+  .hw-step-text {
     margin: 0;
     font-size: 15px;
     line-height: 1.58;
@@ -353,181 +381,125 @@ const css = `
     letter-spacing: -0.01em;
   }
 
- /* ── TABLET (641px – 900px) ── */
-@media (min-width: 641px) and (max-width: 900px) {
-  .hw-diagonal-wrap {
-    padding: 0 20px 0;
-    height: 400vh;
+  /* ── TABLET (641px – 900px) ── */
+  @media (min-width: 641px) and (max-width: 900px) {
+    .hw-diagonal-wrap {
+      padding: 0 20px 0;
+      height: 400vh;
+    }
+    .hw-diagonal-track {
+      position: sticky;
+      top: 64px;
+      height: calc(100vh - 64px);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      gap: 0;
+    }
+    .hw-card-pos-1 {
+      position: relative; width: 100%; height: 100%;
+      bottom: auto; right: auto;
+      grid-column: 1; grid-row: 1;
+      transform: none !important;
+      z-index: 1;
+    }
+    .hw-card-pos-2 {
+      position: relative; width: 100%; height: 100%;
+      bottom: auto; right: auto;
+      grid-column: 2; grid-row: 1;
+      z-index: 2;
+    }
+    .hw-card-pos-3 {
+      position: relative; width: 100%; height: 100%;
+      bottom: auto; right: auto;
+      grid-column: 1; grid-row: 2;
+      z-index: 3;
+    }
+    .hw-card-pos-4 {
+      position: relative; width: 100%; height: 100%;
+      bottom: auto; right: auto;
+      grid-column: 2; grid-row: 2;
+      z-index: 4;
+    }
+    .hw-card-diagonal { will-change: transform; }
+    .hw-header {
+      grid-template-columns: 1fr;
+      gap: 12px;
+      padding: 40px 20px 32px;
+    }
+    .hw-title  { font-size: clamp(32px, 5vw, 48px); }
+    .hw-desc   { padding-top: 0; font-size: 14px; }
   }
 
-  .hw-diagonal-track {
-    position: sticky;
-    top: 64px;
-    height: calc(100vh - 64px);
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    gap: 0;
-  }
+  /* ── MOBILE (≤ 640px) ── */
+  @media (max-width: 640px) {
+    .hw-wrap {
+      overflow: visible;
+    }
 
-  /* Card 1: top-left, static anchor */
-  .hw-card-pos-1 {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    bottom: auto; right: auto;
-    grid-column: 1;
-    grid-row: 1;
-    transform: none !important;
-    z-index: 1;
-  }
+   
+    .hw-diagonal-wrap {
+      padding: 0 !important;
+      height: 400vh !important;
+      margin-bottom: 0 !important;
+      overflow: visible !important;
+    }
 
-  /* Card 2: top-right, slides DOWN over card 1 from above */
-  .hw-card-pos-2 {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    bottom: auto; right: auto;
-    grid-column: 2;
-    grid-row: 1;
-    z-index: 2;
-    /* js translateY drives this on scroll */
-  }
+    .hw-diagonal-track {
+      position: sticky !important;
+      top: 0 !important;
+      height: calc(28svh * 4 + 8px * 3) !important;
+      display: flex !important;
+      flex-direction: column !important;
+      overflow: hidden !important;
+      padding: 0 16px !important;
+      box-sizing: border-box !important;
+      gap: 8px !important;
+    }
 
-  /* Card 3: bottom-left, slides UP over card 1 from below */
-  .hw-card-pos-3 {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    bottom: auto; right: auto;
-    grid-column: 1;
-    grid-row: 2;
-    z-index: 3;
-  }
+    /*
+      Each card: taller (calc so 4 cards + 3 gaps = 100svh),
+      rounded corners, full width within the padded track.
+      NO CSS transform — JS sets translateY exclusively.
+    */
+    .hw-card-diagonal {
+      position: relative !important;
+      width: 100% !important;
+      height: 28svh !important;
+      bottom: auto !important;
+      right: auto !important;
+      left: auto !important;
+      top: auto !important;
+      flex-shrink: 0 !important;
+      will-change: transform;
+      border-radius: 16px !important;
+      box-sizing: border-box !important;
+    }
 
-  /* Card 4: bottom-right, slides UP over card 2 from below */
-  .hw-card-pos-4 {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    bottom: auto; right: auto;
-    grid-column: 2;
-    grid-row: 2;
-    z-index: 4;
-  }
+    /* Card 1 never moves. Higher z-index = slides on top. */
+    .hw-card-pos-1 { z-index: 1; }
+    .hw-card-pos-2 { z-index: 2; }
+    .hw-card-pos-3 { z-index: 3; }
+    .hw-card-pos-4 { z-index: 4; }
 
-  .hw-card-diagonal {
-    will-change: transform;
+    .hw-header {
+      grid-template-columns: 1fr;
+      gap: 10px;
+      padding: 28px 16px 20px;
+    }
+    .hw-title {
+      font-size: 28px;
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+    }
+    .hw-desc {
+      padding-top: 0;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    .hw-step-num  { font-size: 28px; }
+    .hw-step-name { font-size: 18px; }
+    .hw-step-text { font-size: 13.5px; }
+    .hw-bg-num    { font-size: 120px; opacity: 0.07; }
   }
-
-  .hw-header {
-    grid-template-columns: 1fr;
-    gap: 12px;
-    padding: 40px 20px 32px;
-  }
-
-  .hw-title {
-    font-size: clamp(32px, 5vw, 48px);
-  }
-
-  .hw-desc {
-    padding-top: 0;
-    font-size: 14px;
-  }
-}
-
-/* ── MOBILE (≤ 640px) ── */
-@media (max-width: 640px) {
-  .hw-diagonal-wrap {
-    padding: 0;
-    height: 400vh;
-     overflow: visible;
-  }
- .hw-diagonal-wrap {
-    padding: 0 !important;
-    height: 400vh !important; /* MUST stay 400vh for scroll space */
-    margin-bottom: 0 !important;
-  }
-  .hw-diagonal-track {
-    position: sticky !important;
-    top: 0 !important;
-    height: 100svh !important;
-    display: flex !important;
-    flex-direction: column !important;
-    overflow: hidden !important;
-  }
-
-  /* All cards: full width, stacked absolutely so JS can layer them */
-   .hw-card-diagonal {
-    position: relative !important;
-    width: 100% !important;
-    height: 25svh !important;
-    bottom: auto !important;
-    right: auto !important;
-    left: auto !important;
-    top: auto !important;
-    flex-shrink: 0 !important;
-    will-change: transform;
-    transform: none; /* reset — JS takes over */
-  }
-
-  /* card 1: base layer, never moves */
-  .hw-card-pos-1 {
-    z-index: 1;
-    transform: none !important;
-  }
-
-  /* card 2 starts below, scrolls up over card 1 */
-  .hw-card-pos-2 {
-    z-index: 2;
-    transform: translateY(100%) !important; /* overridden by JS */
-  }
-
-  /* card 3 starts below card 2 */
-  .hw-card-pos-3 {
-    z-index: 3;
-    transform: translateY(200%) !important;
-  }
-
-  /* card 4 starts below card 3 */
-  .hw-card-pos-4 {
-    z-index: 4;
-    transform: translateY(300%) !important;
-  }
-
-  .hw-header {
-    grid-template-columns: 1fr;
-    gap: 10px;
-    padding: 28px 16px 24px;
-  }
-
-  .hw-title {
-    font-size: 28px;
-    line-height: 1.05;
-    letter-spacing: -0.04em;
-  }
-
-  .hw-desc {
-    padding-top: 0;
-    font-size: 13px;
-    line-height: 1.5;
-  }
-
-  .hw-step-num {
-    font-size: 28px;
-  }
-
-  .hw-step-name {
-    font-size: 18px;
-  }
-
-  .hw-step-text {
-    font-size: 13.5px;
-  }
-
-  .hw-bg-num {
-    font-size: 120px;
-    opacity: 0.07;
-  }
-}
 `;
